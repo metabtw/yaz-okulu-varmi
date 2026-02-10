@@ -37,7 +37,7 @@ export function SearchBar({ variant = 'hero', defaultValue = '' }: SearchBarProp
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ders veya universite ara..."
+            placeholder="Ders veya üniversite ara..."
             className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
         </div>
@@ -54,7 +54,7 @@ export function SearchBar({ variant = 'hero', defaultValue = '' }: SearchBarProp
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Hangi dersi veya universiteyi ariyorsun? (Orn: Lineer Cebir)"
+            placeholder="Hangi dersi veya üniversiteyi arıyorsun? (Örn: Lineer Cebir)"
             className="w-full h-14 pl-13 pr-36 rounded-xl bg-white/[0.07] text-white placeholder:text-slate-400 text-base focus:outline-none focus:bg-white/[0.1] transition-colors"
             style={{ paddingLeft: '3rem' }}
           />

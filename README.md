@@ -331,6 +331,19 @@ cd apps/api
 npx prisma migrate dev --name degisiklik_adi
 ```
 
+### Tamamlanan Ozellikler (v2)
+
+- [x] Modern futuristic landing page (glassmorphism hero, dark theme, animasyonlu istatistikler)
+- [x] Ders detay sayfasi (split layout, sticky sidebar, basvuru linki)
+- [x] Universiteler icin B2B landing page
+- [x] FAQ sayfasi (accordion, arama, kategoriler)
+- [x] Dashboard: gercek veri ceken istatistikler (Admin + University)
+- [x] Ders CRUD - ekleme, duzenleme (kalem ikonu), silme (cop kutusu)
+- [x] Profil ayarlari - universite bilgileri kaydetme
+- [x] Widget rehberi + gomme kodu + Headless API dokumantasyonu
+- [x] Modal bildirim sistemi (onay, hata, basari mesajlari)
+- [x] Turkce karakter destegi tum arayuzde
+
 ### Planlanan Ozellikler
 
 - [ ] Three.js ile 3D Turkiye haritasi entegrasyonu

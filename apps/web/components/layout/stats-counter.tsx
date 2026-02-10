@@ -8,10 +8,10 @@ import { useEffect, useRef, useState } from 'react';
 import { GraduationCap, Building2, Search, BookOpen } from 'lucide-react';
 
 const stats = [
-  { icon: Building2, value: '80+', label: 'Universite', color: 'text-blue-500' },
+  { icon: Building2, value: '80+', label: 'Üniversite', color: 'text-blue-500' },
   { icon: BookOpen, value: '5.000+', label: 'Aktif Ders', color: 'text-emerald-500' },
-  { icon: Search, value: '10.000+', label: 'Ogrenci Aramasi', color: 'text-violet-500' },
-  { icon: GraduationCap, value: '81', label: 'Sehir', color: 'text-amber-500' },
+  { icon: Search, value: '10.000+', label: 'Öğrenci Araması', color: 'text-violet-500' },
+  { icon: GraduationCap, value: '81', label: 'Şehir', color: 'text-amber-500' },
 ];
 
 export function StatsCounter() {

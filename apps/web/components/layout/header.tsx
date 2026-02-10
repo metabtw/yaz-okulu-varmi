@@ -51,7 +51,7 @@ export function Header() {
               href="/faq"
               className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
             >
-              SSS
+              Sıkça Sorulan Sorular
             </Link>
             <Link
               href="/about"

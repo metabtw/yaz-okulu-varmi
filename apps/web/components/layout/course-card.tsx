@@ -1,7 +1,7 @@
 /**
- * CourseCard - Modern ders karti.
- * Universite logosu, verified badge, AKTS/Online/Ucret badge'leri.
- * Hover'da sol mavi border + yukari kayma + detay linki.
+ * CourseCard - Modern ders kartı.
+ * Sabit yükseklik, üniversite logosu, verified badge, AKTS/Online/Ücret badge'leri.
+ * Hover'da sol mavi border + yukarı kayma + detay linki.
  */
 'use client';
 
@@ -55,24 +55,23 @@ export function CourseCard({ course }: CourseCardProps) {
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`relative bg-white rounded-2xl border transition-all duration-300 overflow-hidden card-lift ${
+        className={`relative bg-white rounded-2xl border transition-all duration-300 overflow-hidden card-lift h-full flex flex-col ${
           hovered
             ? 'border-blue-200 shadow-lg shadow-blue-500/5'
             : 'border-slate-200 shadow-sm'
         }`}
       >
-        {/* Left accent border */}
+        {/* Sol accent border */}
         <div
           className={`absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-2xl transition-opacity duration-300 ${
             hovered ? 'opacity-100' : 'opacity-0'
           }`}
         />
 
-        <div className="p-5 sm:p-6">
-          {/* Header: University info + Verified badge */}
+        <div className="p-5 sm:p-6 flex flex-col flex-1">
+          {/* Header: Üniversite bilgisi + Onaylı badge */}
           <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-3">
-              {/* University avatar */}
+            <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shrink-0">
                 <BookOpen className="w-5 h-5 text-blue-500" />
               </div>
@@ -82,63 +81,61 @@ export function CourseCard({ course }: CourseCardProps) {
                 )}
                 {uni && (
                   <div className="flex items-center gap-1 text-xs text-slate-400 mt-0.5">
-                    <MapPin className="w-3 h-3" />
-                    <span>{uniCity}</span>
+                    <MapPin className="w-3 h-3 shrink-0" />
+                    <span className="truncate">{uniCity}</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Verified badge */}
             <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 shrink-0">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span className="text-xs font-medium">Onayli</span>
+              <span className="text-xs font-medium">Onaylı</span>
             </div>
           </div>
 
-          {/* Course title */}
-          <h3 className="text-lg font-semibold text-slate-900 mb-1 leading-tight">
+          {/* Ders başlığı */}
+          <h3 className="text-lg font-semibold text-slate-900 mb-1 leading-tight line-clamp-1">
             {name}
           </h3>
-          <p className="text-xs font-mono text-slate-400 mb-4">{code}</p>
+          <p className="text-xs font-mono text-slate-400 mb-3">{code}</p>
 
-          {/* Stats badges */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {/* AKTS badge */}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-medium">
-              <BookOpen className="w-3.5 h-3.5" />
+          {/* Badge'ler */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 text-xs font-medium">
+              <BookOpen className="w-3 h-3" />
               {ects} AKTS
             </span>
 
-            {/* Online/Yuzyuze badge */}
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium ${
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${
               isOnline
                 ? 'bg-violet-50 text-violet-600'
                 : 'bg-amber-50 text-amber-600'
             }`}>
-              <Globe className="w-3.5 h-3.5" />
-              {isOnline ? 'Online' : 'Yuzyuze'}
+              <Globe className="w-3 h-3" />
+              {isOnline ? 'Online' : 'Yüzyüze'}
             </span>
 
-            {/* Price badge */}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium">
-              <Coins className="w-3.5 h-3.5" />
-              {price ? `${price.toLocaleString('tr-TR')} ${currency}` : 'Ucretsiz'}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 text-slate-600 text-xs font-medium">
+              <Coins className="w-3 h-3" />
+              {price ? `${price.toLocaleString('tr-TR')} ${currency}` : 'Ücretsiz'}
             </span>
           </div>
 
-          {/* Description */}
-          {description && (
-            <p className="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed">
-              {description}
-            </p>
-          )}
+          {/* Açıklama - sabit 2 satır */}
+          <div className="flex-1 min-h-[2.5rem]">
+            {description && (
+              <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
+                {description}
+              </p>
+            )}
+          </div>
 
           {/* CTA */}
-          <div className={`flex items-center text-sm font-medium text-blue-500 transition-all duration-300 ${
-            hovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
+          <div className={`flex items-center text-sm font-medium text-blue-500 mt-3 pt-3 border-t border-slate-100 transition-all duration-300 ${
+            hovered ? 'opacity-100' : 'opacity-50'
           }`}>
-            Detaylari Gor
+            Detayları Gör
             <ChevronRight className="w-4 h-4 ml-1" />
           </div>
         </div>

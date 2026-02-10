@@ -29,21 +29,21 @@ export function SearchFilters() {
     router.push(`/search?${createQueryString(name, value)}`);
   };
 
-  const cities = ['Istanbul', 'Ankara', 'Izmir', 'Antalya', 'Bursa', 'Eskisehir'];
+  const cities = ['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa', 'Eskişehir'];
 
   return (
     <div className="space-y-6">
       {/* City Filter */}
       <div>
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
-          Sehir
+          Şehir
         </label>
         <select
           value={searchParams.get('city') || ''}
           onChange={(e) => updateFilter('city', e.target.value)}
           className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
         >
-          <option value="">Tum Sehirler</option>
+          <option value="">Tüm Şehirler</option>
           {cities.map((city) => (
             <option key={city} value={city}>{city}</option>
           ))}
@@ -53,13 +53,13 @@ export function SearchFilters() {
       {/* Online/Yuzyuze */}
       <div>
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
-          Egitim Formati
+          Eğitim Formatı
         </label>
         <div className="flex gap-2">
           {[
-            { label: 'Tumu', value: '' },
+            { label: 'Tümü', value: '' },
             { label: 'Online', value: 'true' },
-            { label: 'Yuzyuze', value: 'false' },
+            { label: 'Yüzyüze', value: 'false' },
           ].map((opt) => (
             <button
               key={opt.label}
@@ -79,7 +79,7 @@ export function SearchFilters() {
       {/* AKTS Range */}
       <div>
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
-          AKTS Araligi
+          AKTS Aralığı
         </label>
         <div className="flex items-center gap-2">
           <input
@@ -103,7 +103,7 @@ export function SearchFilters() {
       {/* Price Range */}
       <div>
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
-          Ucret Araligi (TL)
+          Ücret Aralığı (TL)
         </label>
         <div className="flex items-center gap-2">
           <input
@@ -129,7 +129,7 @@ export function SearchFilters() {
         onClick={() => router.push('/search')}
         className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all"
       >
-        Filtreleri Temizle
+        Filtreleri Temizle 
       </button>
     </div>
   );
