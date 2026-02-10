@@ -1,130 +1,136 @@
 /**
- * SearchFilters - Arama sayfası sol panel filtreleri.
- * Client Component: Filtre değişikliklerinde URL güncellenir.
+ * SearchFilters - Arama sayfasi sol sidebar filtreleri.
+ * Sehir, AKTS araligi, ucret araligi, online/yuzyuze secimi.
  */
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback } from 'react';
 
 export function SearchFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [city, setCity] = useState(searchParams.get('city') || '');
-  const [isOnline, setIsOnline] = useState(searchParams.get('isOnline') || '');
-  const [minEcts, setMinEcts] = useState(searchParams.get('minEcts') || '');
-  const [maxEcts, setMaxEcts] = useState(searchParams.get('maxEcts') || '');
-  const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
+      params.delete('page');
+      return params.toString();
+    },
+    [searchParams],
+  );
 
-  const applyFilters = () => {
-    const params = new URLSearchParams();
-    const q = searchParams.get('q');
-    if (q) params.set('q', q);
-    if (city) params.set('city', city);
-    if (isOnline) params.set('isOnline', isOnline);
-    if (minEcts) params.set('minEcts', minEcts);
-    if (maxEcts) params.set('maxEcts', maxEcts);
-    if (maxPrice) params.set('maxPrice', maxPrice);
-
-    router.push(`/search?${params.toString()}`);
+  const updateFilter = (name: string, value: string) => {
+    router.push(`/search?${createQueryString(name, value)}`);
   };
 
-  const clearFilters = () => {
-    setCity('');
-    setIsOnline('');
-    setMinEcts('');
-    setMaxEcts('');
-    setMaxPrice('');
-    const q = searchParams.get('q');
-    router.push(q ? `/search?q=${q}` : '/search');
-  };
+  const cities = ['Istanbul', 'Ankara', 'Izmir', 'Antalya', 'Bursa', 'Eskisehir'];
 
   return (
-    <div className="bg-card rounded-lg border border-border p-5">
-      <h3 className="font-semibold text-base mb-4">Filtreler</h3>
-
-      {/* Şehir */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-foreground mb-1.5">Şehir</label>
-        <input
-          type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="Örn: İstanbul"
-          className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      </div>
-
-      {/* Eğitim Türü */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-foreground mb-1.5">Eğitim Türü</label>
+    <div className="space-y-6">
+      {/* City Filter */}
+      <div>
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
+          Sehir
+        </label>
         <select
-          value={isOnline}
-          onChange={(e) => setIsOnline(e.target.value)}
-          className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          value={searchParams.get('city') || ''}
+          onChange={(e) => updateFilter('city', e.target.value)}
+          className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer"
         >
-          <option value="">Tümü</option>
-          <option value="true">Uzaktan Eğitim</option>
-          <option value="false">Yüz Yüze</option>
+          <option value="">Tum Sehirler</option>
+          {cities.map((city) => (
+            <option key={city} value={city}>{city}</option>
+          ))}
         </select>
       </div>
 
-      {/* AKTS Aralığı */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-foreground mb-1.5">AKTS Aralığı</label>
+      {/* Online/Yuzyuze */}
+      <div>
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
+          Egitim Formati
+        </label>
         <div className="flex gap-2">
+          {[
+            { label: 'Tumu', value: '' },
+            { label: 'Online', value: 'true' },
+            { label: 'Yuzyuze', value: 'false' },
+          ].map((opt) => (
+            <button
+              key={opt.label}
+              onClick={() => updateFilter('isOnline', opt.value)}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-medium transition-all ${
+                (searchParams.get('isOnline') || '') === opt.value
+                  ? 'bg-blue-500 text-white shadow-sm'
+                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* AKTS Range */}
+      <div>
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
+          AKTS Araligi
+        </label>
+        <div className="flex items-center gap-2">
           <input
             type="number"
-            value={minEcts}
-            onChange={(e) => setMinEcts(e.target.value)}
             placeholder="Min"
-            min={1}
-            max={30}
-            className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            value={searchParams.get('minEcts') || ''}
+            onChange={(e) => updateFilter('minEcts', e.target.value)}
+            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
+          <span className="text-slate-300 text-sm">-</span>
           <input
             type="number"
-            value={maxEcts}
-            onChange={(e) => setMaxEcts(e.target.value)}
             placeholder="Max"
-            min={1}
-            max={30}
-            className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            value={searchParams.get('maxEcts') || ''}
+            onChange={(e) => updateFilter('maxEcts', e.target.value)}
+            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
         </div>
       </div>
 
-      {/* Maksimum Ücret */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-foreground mb-1.5">Maks. Ücret (TL)</label>
-        <input
-          type="number"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          placeholder="Örn: 5000"
-          min={0}
-          className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
+      {/* Price Range */}
+      <div>
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
+          Ucret Araligi (TL)
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            placeholder="Min"
+            value={searchParams.get('minPrice') || ''}
+            onChange={(e) => updateFilter('minPrice', e.target.value)}
+            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+          />
+          <span className="text-slate-300 text-sm">-</span>
+          <input
+            type="number"
+            placeholder="Max"
+            value={searchParams.get('maxPrice') || ''}
+            onChange={(e) => updateFilter('maxPrice', e.target.value)}
+            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+          />
+        </div>
       </div>
 
-      {/* Butonlar */}
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={applyFilters}
-          className="flex-1 h-9 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
-          Filtrele
-        </button>
-        <button
-          type="button"
-          onClick={clearFilters}
-          className="h-9 px-3 rounded-md bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
-        >
-          Temizle
-        </button>
-      </div>
+      {/* Clear Filters */}
+      <button
+        onClick={() => router.push('/search')}
+        className="w-full py-2.5 px-4 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all"
+      >
+        Filtreleri Temizle
+      </button>
     </div>
   );
 }

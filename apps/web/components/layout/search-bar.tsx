@@ -1,15 +1,23 @@
 /**
- * SearchBar - Ana sayfa ve arama sayfasında kullanılan arama çubuğu.
- * Client Component: Kullanıcı etkileşimi (form submit) gerektirir.
+ * SearchBar - Glassmorphism arama kutusu.
+ * Hero section ve search page'de kullanilir.
+ * variant="hero": buyuk, koyu arka plan uzerinde cam efekti
+ * variant="compact": search page header icin
  */
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Search } from 'lucide-react';
 
-export function SearchBar() {
+interface SearchBarProps {
+  variant?: 'hero' | 'compact';
+  defaultValue?: string;
+}
+
+export function SearchBar({ variant = 'hero', defaultValue = '' }: SearchBarProps) {
   const router = useRouter();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(defaultValue);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,38 +28,44 @@ export function SearchBar() {
     }
   };
 
+  if (variant === 'compact') {
+    return (
+      <form onSubmit={handleSearch} className="w-full">
+        <div className="relative flex items-center">
+          <Search className="absolute left-3.5 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Ders veya universite ara..."
+            className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+          />
+        </div>
+      </form>
+    );
+  }
+
   return (
     <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto">
-      <div className="relative flex items-center">
-        {/* Arama ikonu */}
-        <svg
-          className="absolute left-4 h-5 w-5 text-muted-foreground"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+      <div className="relative">
+        <div className="relative flex items-center glass-light rounded-2xl p-1.5 glow-border">
+          <Search className="absolute left-5 w-5 h-5 text-slate-400" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Hangi dersi veya universiteyi ariyorsun? (Orn: Lineer Cebir)"
+            className="w-full h-14 pl-13 pr-36 rounded-xl bg-white/[0.07] text-white placeholder:text-slate-400 text-base focus:outline-none focus:bg-white/[0.1] transition-colors"
+            style={{ paddingLeft: '3rem' }}
           />
-        </svg>
-
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ders adı, kodu veya üniversite ara..."
-          className="w-full h-14 pl-12 pr-32 rounded-xl border border-border bg-white text-foreground shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-base"
-        />
-
-        <button
-          type="submit"
-          className="absolute right-2 inline-flex items-center justify-center rounded-lg h-10 px-6 bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors"
-        >
-          Ara
-        </button>
+          <button
+            type="submit"
+            className="absolute right-2.5 inline-flex items-center gap-2 rounded-xl h-11 px-6 bg-blue-500 hover:bg-blue-400 text-white font-medium text-sm transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+          >
+            <Search className="w-4 h-4" />
+            <span className="hidden sm:inline">Ara</span>
+          </button>
+        </div>
       </div>
     </form>
   );

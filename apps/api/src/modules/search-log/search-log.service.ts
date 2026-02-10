@@ -8,7 +8,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 /** Arama logu girdi tipi */
 interface SearchLogInput {
   searchQuery: string | null;
-  filters: Record<string, unknown>;
+  filters: Record<string, string | boolean | number | undefined>;
   resultCount: number;
   ipHash: string | null;
   userAgent: string | null;
@@ -25,7 +25,7 @@ export class SearchLogService {
     return this.prisma.searchLog.create({
       data: {
         searchQuery: input.searchQuery,
-        filters: input.filters, // PostgreSQL native JSON desteği
+        filters: input.filters as object, // PostgreSQL native JSON
         resultCount: input.resultCount,
         ipHash: input.ipHash,
         userAgent: input.userAgent,

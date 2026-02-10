@@ -1,6 +1,6 @@
 /**
- * DashboardNav - Dashboard sidebar navigasyon menüsü.
- * Rol bazlı menü: Admin tüm menüleri, University kendi menülerini görür.
+ * DashboardNav - Dashboard sidebar navigasyon menusu.
+ * Rol bazli menu: Admin tum menuleri, University kendi menularini gorur.
  */
 'use client';
 
@@ -8,19 +8,23 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
+import {
+  LayoutDashboard, BookOpen, Building2, Clock, Settings, LogOut, MapPin
+} from 'lucide-react';
 
 interface NavItem {
   href: string;
   label: string;
+  icon: React.ComponentType<{ className?: string }>;
   adminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Genel Bakis' },
-  { href: '/dashboard/courses', label: 'Ders Yonetimi' },
-  { href: '/dashboard/universities', label: 'Universite Yonetimi', adminOnly: true },
-  { href: '/dashboard/pending', label: 'Onay Bekleyenler', adminOnly: true },
-  { href: '/dashboard/settings', label: 'Profil Ayarlari' },
+  { href: '/dashboard', label: 'Genel Bakış', icon: LayoutDashboard },
+  { href: '/dashboard/courses', label: 'Ders Yönetimi', icon: BookOpen },
+  { href: '/dashboard/universities', label: 'Üniversite Yönetimi', icon: Building2, adminOnly: true },
+  { href: '/dashboard/pending', label: 'Onay Bekleyenler', icon: Clock, adminOnly: true },
+  { href: '/dashboard/settings', label: 'Profil & Widget', icon: Settings },
 ];
 
 export function DashboardNav() {
@@ -54,28 +58,50 @@ export function DashboardNav() {
 
   return (
     <nav className="space-y-1">
-      {filteredItems.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
-            pathname === item.href
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
+      {/* Logo */}
+      <Link href="/" className="flex items-center gap-2.5 px-3 py-3 mb-4">
+        <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
+          <MapPin className="w-4 h-4 text-white" />
+        </div>
+        <span className="text-sm font-bold text-slate-900">YOV? Panel</span>
+      </Link>
 
-      <hr className="my-4 border-border" />
+      {filteredItems.map((item) => {
+        const Icon = item.icon;
+        const isActive = pathname === item.href;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all',
+              isActive
+                ? 'bg-blue-500 text-white shadow-sm shadow-blue-500/20'
+                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
+            )}
+          >
+            <Icon className="w-4 h-4" />
+            {item.label}
+          </Link>
+        );
+      })}
+
+      <div className="h-px bg-slate-200 my-4" />
+
+      <Link
+        href="/"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all"
+      >
+        <MapPin className="w-4 h-4" />
+        Siteye Dön
+      </Link>
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors w-full text-left"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-all w-full text-left"
       >
-        Cikis Yap
+        <LogOut className="w-4 h-4" />
+        Çıkış Yap
       </button>
     </nav>
   );

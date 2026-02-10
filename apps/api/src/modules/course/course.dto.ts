@@ -26,13 +26,17 @@ export const CreateCourseSchema = z.object({
     .optional(),
   currency: z.string().default('TRY'),
   isOnline: z.boolean().default(false),
-  description: z.string().max(5000).optional(),
-  applicationUrl: z.string().url('Geçerli bir URL giriniz').optional(),
+  description: z.string().max(5000).optional().or(z.literal('')),
+  applicationUrl: z.union([
+    z.string().url('Geçerli bir URL giriniz'),
+    z.literal(''),
+  ]).optional(),
   quota: z
     .number()
     .int()
     .min(1, 'Kontenjan en az 1 olmalıdır')
-    .optional(),
+    .optional()
+    .nullable(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
 });
@@ -41,7 +45,19 @@ export type CreateCourseDto = z.infer<typeof CreateCourseSchema>;
 
 // ---- Ders Güncelleme ----
 
-export const UpdateCourseSchema = CreateCourseSchema.partial();
+export const UpdateCourseSchema = z.object({
+  code: z.string().min(2).max(20).optional(),
+  name: z.string().min(2).max(200).optional(),
+  ects: z.number().int().min(1).max(30).optional(),
+  price: z.number().min(0).optional().nullable(),
+  currency: z.string().optional(),
+  isOnline: z.boolean().optional(),
+  description: z.string().max(5000).optional().or(z.literal('')),
+  applicationUrl: z.union([z.string().url(), z.literal('')]).optional(),
+  quota: z.number().int().min(1).optional().nullable(),
+  startDate: z.string().datetime().optional().nullable(),
+  endDate: z.string().datetime().optional().nullable(),
+});
 
 export type UpdateCourseDto = z.infer<typeof UpdateCourseSchema>;
 

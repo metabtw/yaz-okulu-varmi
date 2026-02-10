@@ -18,7 +18,6 @@ import {
   Query,
   UseGuards,
   Req,
-  UsePipes,
   ForbiddenException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -73,8 +72,7 @@ export class CourseController {
   @Post('university/courses')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.UNIVERSITY)
-  @UsePipes(new ZodValidationPipe(CreateCourseSchema))
-  async create(@Body() dto: CreateCourseDto, @Req() req: Request) {
+  async create(@Body(new ZodValidationPipe(CreateCourseSchema)) dto: CreateCourseDto, @Req() req: Request) {
     const user = req.user as { universityId: string | null };
     if (!user.universityId) {
       throw new ForbiddenException('Bir üniversiteye bağlı değilsiniz');
@@ -86,10 +84,9 @@ export class CourseController {
   @Patch('university/courses/:id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.UNIVERSITY)
-  @UsePipes(new ZodValidationPipe(UpdateCourseSchema))
   async update(
     @Param('id') id: string,
-    @Body() dto: UpdateCourseDto,
+    @Body(new ZodValidationPipe(UpdateCourseSchema)) dto: UpdateCourseDto,
     @Req() req: Request,
   ) {
     const user = req.user as { universityId: string | null };

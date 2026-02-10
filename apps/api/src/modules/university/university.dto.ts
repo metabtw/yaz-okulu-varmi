@@ -15,9 +15,9 @@ export const CreateUniversitySchema = z.object({
     .string()
     .min(2, 'Şehir adı en az 2 karakter olmalıdır')
     .max(100),
-  logo: z.string().url('Geçerli bir URL giriniz').optional(),
-  website: z.string().url('Geçerli bir URL giriniz').optional(),
-  contactEmail: z.string().email('Geçerli bir e-posta giriniz').optional(),
+  logo: z.union([z.string().url('Geçerli bir URL giriniz'), z.literal('')]).optional(),
+  website: z.union([z.string().url('Geçerli bir URL giriniz'), z.literal('')]).optional(),
+  contactEmail: z.union([z.string().email('Geçerli bir e-posta giriniz'), z.literal('')]).optional(),
 });
 
 export type CreateUniversityDto = z.infer<typeof CreateUniversitySchema>;
@@ -27,9 +27,9 @@ export type CreateUniversityDto = z.infer<typeof CreateUniversitySchema>;
 export const UpdateUniversitySchema = z.object({
   name: z.string().min(3).max(200).optional(),
   city: z.string().min(2).max(100).optional(),
-  logo: z.string().url().nullable().optional(),
-  website: z.string().url().nullable().optional(),
-  contactEmail: z.string().email().nullable().optional(),
+  logo: z.union([z.string().url(), z.literal('')]).nullable().optional(),
+  website: z.union([z.string().url(), z.literal('')]).nullable().optional(),
+  contactEmail: z.union([z.string().email(), z.literal('')]).nullable().optional(),
 });
 
 export type UpdateUniversityDto = z.infer<typeof UpdateUniversitySchema>;

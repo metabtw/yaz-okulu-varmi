@@ -21,9 +21,14 @@ export class UserService {
         email: true,
         fullName: true,
         role: true,
+        status: true,
         universityId: true,
         university: {
-          select: { id: true, name: true, slug: true },
+          select: {
+            id: true, name: true, slug: true, city: true,
+            website: true, contactEmail: true, logo: true,
+            widgetConfig: true, isVerified: true,
+          },
         },
         createdAt: true,
       },

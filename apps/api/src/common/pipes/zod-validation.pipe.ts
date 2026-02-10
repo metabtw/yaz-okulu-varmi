@@ -7,24 +7,30 @@ import {
   PipeTransform,
   Injectable,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { ZodSchema, ZodError } from 'zod';
 
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
+  private readonly logger = new Logger(ZodValidationPipe.name);
+
   constructor(private readonly schema: ZodSchema) {}
 
   transform(value: unknown) {
     try {
-      // Zod şemasına göre doğrula ve dönüştür
       return this.schema.parse(value);
     } catch (error) {
       if (error instanceof ZodError) {
-        // Zod hata mesajlarını okunabilir formata çevir
         const formattedErrors = error.errors.map((err) => ({
           field: err.path.join('.'),
           message: err.message,
+          code: err.code,
         }));
+
+        this.logger.warn(
+          `Validasyon hatası: ${JSON.stringify(formattedErrors)} | Gelen veri: ${JSON.stringify(value)}`,
+        );
 
         throw new BadRequestException({
           message: 'Validasyon hatası',

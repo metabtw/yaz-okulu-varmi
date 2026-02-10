@@ -92,6 +92,38 @@ export const courseApi = {
 export const universityApi = {
   getAll: () => fetchApi<unknown[]>('/universities'),
   getById: (id: string) => fetchApi<Record<string, unknown>>(`/universities/${id}`),
+  update: (id: string, data: Record<string, unknown>) =>
+    fetchApi<Record<string, unknown>>(`/universities/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  updateWidget: (id: string, data: Record<string, unknown>) =>
+    fetchApi<Record<string, unknown>>(`/universities/${id}/widget`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+};
+
+// ---- User API ----
+
+export const userApi = {
+  getMe: () => fetchApi<{
+    id: string;
+    email: string;
+    fullName: string | null;
+    role: string;
+    status: string;
+    universityId: string | null;
+    university?: {
+      id: string;
+      name: string;
+      slug: string;
+      city: string;
+      website: string | null;
+      contactEmail: string | null;
+      widgetConfig: Record<string, unknown> | null;
+    };
+  }>('/users/me'),
 };
 
 // ---- Widget API ----

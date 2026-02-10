@@ -16,7 +16,6 @@ import {
   Body,
   UseGuards,
   Req,
-  UsePipes,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UniversityService } from './university.service';
@@ -70,8 +69,9 @@ export class UniversityController {
   @Post('universities')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.ADMIN)
-  @UsePipes(new ZodValidationPipe(CreateUniversitySchema))
-  async create(@Body() dto: CreateUniversityDto) {
+  async create(
+    @Body(new ZodValidationPipe(CreateUniversitySchema)) dto: CreateUniversityDto,
+  ) {
     return this.universityService.create(dto);
   }
 
@@ -79,14 +79,12 @@ export class UniversityController {
   @Patch('universities/:id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.UNIVERSITY, Role.ADMIN)
-  @UsePipes(new ZodValidationPipe(UpdateUniversitySchema))
   async update(
     @Param('id') id: string,
-    @Body() dto: UpdateUniversityDto,
+    @Body(new ZodValidationPipe(UpdateUniversitySchema)) dto: UpdateUniversityDto,
     @Req() req: Request,
   ) {
     const user = req.user as { role: Role; universityId: string | null };
-    // Admin her üniversiteyi güncelleyebilir, University sadece kendisini
     const requestingUniversityId =
       user.role === Role.ADMIN ? undefined : user.universityId || undefined;
     return this.universityService.update(id, dto, requestingUniversityId);
@@ -104,10 +102,9 @@ export class UniversityController {
   @Patch('universities/:id/widget')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.UNIVERSITY)
-  @UsePipes(new ZodValidationPipe(WidgetConfigSchema))
   async updateWidgetConfig(
     @Param('id') id: string,
-    @Body() dto: WidgetConfigDto,
+    @Body(new ZodValidationPipe(WidgetConfigSchema)) dto: WidgetConfigDto,
     @Req() req: Request,
   ) {
     const user = req.user as { universityId: string | null };
