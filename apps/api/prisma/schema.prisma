@@ -5,20 +5,30 @@
 // ============================================================
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-// NOT: Üretim ortamında provider "postgresql" olarak değiştirilmelidir.
 
 generator client {
   provider = "prisma-client-js"
 }
 
-// ---- Roller ve Durumlar ----
-// SQLite enum desteklemez; role ve status alanları String olarak tutulur.
-// Role geçerli değerler: "STUDENT", "UNIVERSITY", "ADMIN"
-// UserStatus geçerli değerler: "PENDING", "APPROVED", "REJECTED", "ACTIVE"
-// Üretim ortamında PostgreSQL'e geçildiğinde enum'a dönüştürülecektir.
+// ---- Enum Tanımları ----
+
+/// Kullanıcı rolleri
+enum Role {
+  STUDENT
+  UNIVERSITY
+  ADMIN
+}
+
+/// Kullanıcı hesap durumları
+enum UserStatus {
+  PENDING   // Onay bekliyor (Üniversite yetkilisi ilk kayıt)
+  APPROVED  // Admin tarafından onaylandı
+  REJECTED  // Admin tarafından reddedildi
+  ACTIVE    // Aktif kullanıcı
+}
 
 // ---- Modeller ----
 
@@ -33,8 +43,8 @@ model University {
   contactEmail String?             // İletişim e-postası
   isVerified   Boolean  @default(false) // Admin tarafından onay durumu
 
-  // Widget konfigürasyonu - JSON string olarak tutulur (SQLite uyumlu)
-  widgetConfig String?  @default("{\"primaryColor\": \"#1e40af\", \"theme\": \"light\"}")
+  // Widget konfigürasyonu - PostgreSQL native JSON desteği
+  widgetConfig Json?    @default("{\"primaryColor\": \"#1e40af\", \"theme\": \"light\"}")
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -53,8 +63,8 @@ model User {
   email        String      @unique
   passwordHash String               // bcrypt ile hashlenmiş şifre
   fullName     String?               // Tam ad
-  role         String      @default("STUDENT") // STUDENT | UNIVERSITY | ADMIN
-  status       String      @default("ACTIVE")  // PENDING | APPROVED | REJECTED | ACTIVE
+  role         Role        @default(STUDENT)
+  status       UserStatus  @default(ACTIVE)
 
   // Multitenancy bağlantısı: UNIVERSITY rolü için zorunlu
   universityId String?
@@ -74,7 +84,7 @@ model Course {
   code           String               // Ders kodu (örn: MAT101)
   name           String               // Ders adı (örn: Matematik I)
   ects           Int                  // AKTS kredisi
-  price          Float?                // Ücret (SQLite'da Decimal yok, Float kullanılır)
+  price          Decimal?   @db.Decimal(10, 2) // Ücret (PostgreSQL Decimal)
   currency       String     @default("TRY")
   isOnline       Boolean    @default(false) // Uzaktan eğitim seçeneği
   description    String?              // Ders açıklaması
@@ -102,7 +112,7 @@ model Course {
 model SearchLog {
   id          String   @id @default(cuid())
   searchQuery String?            // Kullanıcının yazdığı arama metni
-  filters     String?            // Uygulanan filtreler JSON string olarak
+  filters     Json?              // Uygulanan filtreler (PostgreSQL native JSON)
   resultCount Int                // Kaç sonuç döndüğü
   ipHash      String?            // Anonimleştirilmiş IP (SHA-256 hash)
   userAgent   String?            // Tarayıcı bilgisi (mobil/desktop analizi)
@@ -119,7 +129,7 @@ model ActivityLog {
   action    String             // İşlem tipi: COURSE_CREATE, COURSE_UPDATE, UNIVERSITY_VERIFY vb.
   entity    String?            // Etkilenen varlık tipi: Course, University
   entityId  String?            // Etkilenen varlık ID'si
-  details   String?            // Değişiklik detayları JSON string olarak
+  details   Json?              // Değişiklik detayları (PostgreSQL native JSON)
   ipAddress String?            // İşlem yapılan IP
   createdAt DateTime @default(now())
 

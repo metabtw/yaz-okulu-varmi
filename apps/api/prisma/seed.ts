@@ -1,13 +1,11 @@
 /**
  * Prisma Seed - Geliştirme ortamı için örnek veriler.
  * Admin kullanıcısı, örnek üniversiteler ve dersler oluşturur.
- * Çalıştırmak için: npm run db:seed
+ * Çalıştırmak için: npx ts-node prisma/seed.ts
  */
-import { PrismaClient } from '@prisma/client';
-
-// SQLite enum desteklemediği için roller string sabit olarak tanımlanır
-const Role = { STUDENT: 'STUDENT', UNIVERSITY: 'UNIVERSITY', ADMIN: 'ADMIN' } as const;
+import { PrismaClient, Role, UserStatus } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { Decimal } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
 
@@ -24,6 +22,7 @@ async function main() {
       passwordHash: adminPassword,
       fullName: 'Sistem Yöneticisi',
       role: Role.ADMIN,
+      status: UserStatus.ACTIVE,
     },
   });
   console.log(`Admin oluşturuldu: ${admin.email}`);
@@ -77,6 +76,7 @@ async function main() {
       passwordHash: uniPassword,
       fullName: 'İTÜ Yaz Okulu Yetkilisi',
       role: Role.UNIVERSITY,
+      status: UserStatus.ACTIVE, // Seed'de direkt aktif
       universityId: uni1.id,
     },
   });
@@ -84,20 +84,19 @@ async function main() {
 
   // 4. Örnek dersler oluştur
   const courses = [
-    { code: 'MAT101', name: 'Matematik I', ects: 6, price: 3500, isOnline: false, universityId: uni1.id },
-    { code: 'FIZ101', name: 'Fizik I', ects: 4, price: 2800, isOnline: false, universityId: uni1.id },
-    { code: 'BIL101', name: 'Bilgisayar Programlama', ects: 5, price: 4000, isOnline: true, universityId: uni1.id },
-    { code: 'MAT201', name: 'Diferansiyel Denklemler', ects: 4, price: 3000, isOnline: false, universityId: uni2.id },
-    { code: 'ENG101', name: 'İngilizce I', ects: 3, price: 2000, isOnline: true, universityId: uni2.id },
-    { code: 'KIM101', name: 'Genel Kimya', ects: 5, price: 2500, isOnline: false, universityId: uni3.id },
-    { code: 'BIO101', name: 'Genel Biyoloji', ects: 4, price: 2200, isOnline: true, universityId: uni3.id },
+    { code: 'MAT101', name: 'Matematik I', ects: 6, price: new Decimal(3500), isOnline: false, universityId: uni1.id },
+    { code: 'FIZ101', name: 'Fizik I', ects: 4, price: new Decimal(2800), isOnline: false, universityId: uni1.id },
+    { code: 'BIL101', name: 'Bilgisayar Programlama', ects: 5, price: new Decimal(4000), isOnline: true, universityId: uni1.id },
+    { code: 'MAT201', name: 'Diferansiyel Denklemler', ects: 4, price: new Decimal(3000), isOnline: false, universityId: uni2.id },
+    { code: 'ENG101', name: 'İngilizce I', ects: 3, price: new Decimal(2000), isOnline: true, universityId: uni2.id },
+    { code: 'KIM101', name: 'Genel Kimya', ects: 5, price: new Decimal(2500), isOnline: false, universityId: uni3.id },
+    { code: 'BIO101', name: 'Genel Biyoloji', ects: 4, price: new Decimal(2200), isOnline: true, universityId: uni3.id },
   ];
 
   for (const course of courses) {
     await prisma.course.create({
       data: {
         ...course,
-        price: course.price,
         currency: 'TRY',
         description: `${course.name} dersi - Yaz okulu programı kapsamında sunulmaktadır.`,
       },

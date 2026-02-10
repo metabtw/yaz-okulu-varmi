@@ -21,8 +21,8 @@ import { Role, UserStatus } from '../../common/constants/roles';
 interface JwtPayload {
   sub: string;
   email: string;
-  role: string;
-  status: string;
+  role: Role;
+  status: UserStatus;
   universityId: string | null;
 }
 
@@ -173,8 +173,8 @@ export class AuthService {
   private generateToken(
     userId: string,
     email: string,
-    role: string,
-    status: string,
+    role: Role,
+    status: UserStatus,
     universityId: string | null,
   ): string {
     const payload: JwtPayload = {

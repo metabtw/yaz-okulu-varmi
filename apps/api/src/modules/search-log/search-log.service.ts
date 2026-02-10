@@ -25,7 +25,7 @@ export class SearchLogService {
     return this.prisma.searchLog.create({
       data: {
         searchQuery: input.searchQuery,
-        filters: JSON.stringify(input.filters),
+        filters: input.filters, // PostgreSQL native JSON desteği
         resultCount: input.resultCount,
         ipHash: input.ipHash,
         userAgent: input.userAgent,

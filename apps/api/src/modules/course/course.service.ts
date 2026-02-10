@@ -38,11 +38,11 @@ export class CourseService {
       university: { isVerified: true },
     };
 
-    // Metin araması (ders adı veya kodu) - SQLite'da insensitive varsayılan
+    // Metin araması (ders adı veya kodu) - PostgreSQL case-insensitive
     if (dto.q) {
       where.OR = [
-        { name: { contains: dto.q } },
-        { code: { contains: dto.q } },
+        { name: { contains: dto.q, mode: 'insensitive' } },
+        { code: { contains: dto.q, mode: 'insensitive' } },
       ];
     }
 

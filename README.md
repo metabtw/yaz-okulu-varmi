@@ -24,7 +24,7 @@ Turkiye'deki universitelerin yaz okulu ders bilgilerini standardize eden, univer
 |--------|-----------|
 | **Frontend** | Next.js 14 (App Router), TypeScript, Tailwind CSS, Shadcn/UI |
 | **Backend** | NestJS 10, TypeScript, Passport.js (JWT) |
-| **Veritabani** | PostgreSQL (prod) / SQLite (dev), Prisma ORM |
+| **Veritabani** | PostgreSQL 16 (Docker), Prisma ORM |
 | **Validasyon** | Zod (API request/response validation) |
 | **Cache** | Redis (planli) |
 | **Deployment** | Vercel (Frontend), Railway/Render (Backend) |
@@ -45,7 +45,7 @@ yaz-okulu-varmi/
 │   │       ├── main.ts              # Uygulama giris noktasi
 │   │       ├── app.module.ts        # Ana modul
 │   │       ├── common/
-│   │       │   ├── constants/roles.ts    # Role & UserStatus sabitleri
+│   │       │   ├── constants/roles.ts    # Role & UserStatus (Prisma enum re-export)
 │   │       │   ├── guards/roles.guard.ts # RBAC Guard
 │   │       │   ├── decorators/roles.decorator.ts
 │   │       │   ├── pipes/zod-validation.pipe.ts
@@ -193,13 +193,13 @@ Istek Akisi:
 ### On Kosullar
 
 - Node.js >= 18
-- Docker Desktop (PostgreSQL icin) veya SQLite (gelistirme)
+- Docker Desktop (PostgreSQL + Redis icin)
 - Git
 
 ### 1. Repoyu klonla
 
 ```bash
-git clone https://github.com/KULLANICI_ADI/yaz-okulu-varmi.git
+git clone https://github.com/metabtw/yaz-okulu-varmi.git
 cd yaz-okulu-varmi
 ```
 
@@ -209,7 +209,15 @@ cd yaz-okulu-varmi
 npm install
 ```
 
-### 3. Ortam degiskenlerini ayarla
+### 3. Docker servislerini baslat
+
+```bash
+docker compose up -d
+```
+
+Bu komut PostgreSQL (port 5432) ve Redis (port 6379) konteynerlerini baslatir.
+
+### 4. Ortam degiskenlerini ayarla
 
 ```bash
 # Backend
@@ -219,27 +227,31 @@ cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env.local
 ```
 
-### 4. Veritabanini hazirla
+Varsayilan `.env` degerleri:
 
-**Docker ile PostgreSQL (Onerilen):**
-```bash
-docker compose up -d postgres
-# .env'de DATABASE_URL'i PostgreSQL'e cevir
+```
+DATABASE_URL="postgresql://yazokulu:yazokulu123@localhost:5432/yazokulu_db?schema=public"
+JWT_SECRET="super-secret-jwt-key-degistir-beni"
+PORT=4000
+FRONTEND_URL="http://localhost:3000"
 ```
 
-**SQLite ile (Hizli baslangic):**
-```bash
-# .env zaten SQLite olarak ayarli: DATABASE_URL="file:./dev.db"
-```
+### 5. Veritabanini hazirla
 
 ```bash
 cd apps/api
+
+# Prisma client olustur
 npx prisma generate
-npx prisma db push
-npx ts-node prisma/seed.ts   # Ornek verileri yukle
+
+# Migration calistir (tablolari PostgreSQL'e yaz)
+npx prisma migrate dev --name init
+
+# Ornek verileri yukle (admin, universiteler, dersler)
+npx ts-node prisma/seed.ts
 ```
 
-### 5. Uygulamayi baslat
+### 6. Uygulamayi baslat
 
 ```bash
 # Backend (port 4000)
@@ -251,12 +263,14 @@ cd apps/web
 npx next dev
 ```
 
-### 6. Veritabanini gorsel olarak incele
+### 7. Veritabanini gorsel olarak incele
 
 ```bash
+# Prisma Studio (http://localhost:5555)
 cd apps/api
 npx prisma studio
-# Tarayicide http://localhost:5555 acilir
+
+# Veya pgAdmin ile: localhost:5432, user: yazokulu, pass: yazokulu123, db: yazokulu_db
 ```
 
 ---
@@ -299,14 +313,23 @@ npx prisma studio
 
 ## Gelistirme Notlari
 
-### PostgreSQL'e Gecis (Uretim)
+### Veritabani (PostgreSQL)
 
-1. `apps/api/prisma/schema.prisma` dosyasinda `provider = "sqlite"` satirini `provider = "postgresql"` olarak degistir
-2. `String` olan `role` ve `status` alanlarini PostgreSQL enum'a cevir
-3. `Float` olan `price` alanini `Decimal @db.Decimal(10,2)` yap
-4. `String` olan JSON alanlari (`widgetConfig`, `filters`, `details`) `Json` tipine cevir
-5. `.env` dosyasindaki `DATABASE_URL`'i PostgreSQL connection string'ine guncelle
-6. `npx prisma migrate dev` ile migration olustur
+Proje PostgreSQL 16 kullanmaktadir. Veritabani Docker Compose ile ayaga kalkar.
+
+**Sema ozellikleri:**
+- `Role` ve `UserStatus` PostgreSQL native **enum** olarak tanimli
+- `price` alani `Decimal(10,2)` ile hassas para hesabi
+- `widgetConfig`, `filters`, `details` alanlari PostgreSQL native **Json** tipi
+- Arama sorgularinda `mode: 'insensitive'` (buyuk/kucuk harf duyarsiz)
+- Performans icin index'ler: sehir, rol, status, ders adi, ders kodu, bilesik index
+
+**Yeni migration olusturmak icin:**
+
+```bash
+cd apps/api
+npx prisma migrate dev --name degisiklik_adi
+```
 
 ### Planlanan Ozellikler
 

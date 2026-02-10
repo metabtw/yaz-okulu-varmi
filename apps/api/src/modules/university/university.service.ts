@@ -151,7 +151,7 @@ export class UniversityService {
 
     return this.prisma.university.update({
       where: { id },
-      data: { widgetConfig: JSON.stringify(config) },
+      data: { widgetConfig: config as object }, // PostgreSQL native JSON desteği
     });
   }
 

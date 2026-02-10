@@ -7,13 +7,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Role, UserStatus } from '../../common/constants/roles';
 
 /** JWT token içindeki veri yapısı */
 interface JwtPayload {
   sub: string;
   email: string;
-  role: string;
-  status: string;
+  role: Role;
+  status: UserStatus;
   universityId: string | null;
 }
 
