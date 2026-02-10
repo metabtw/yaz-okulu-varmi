@@ -1,0 +1,8 @@
+{
+  "name": "@yov/types",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Yaz Okulu Var mı? - Ortak TypeScript Tipleri",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts"
+}

@@ -1,0 +1,33 @@
+# Yaz Okulu Var mı? - Geliştirme Ortamı Servisleri
+# PostgreSQL veritabanı ve Redis cache servisi
+
+version: '3.8'
+
+services:
+  # PostgreSQL Veritabanı
+  postgres:
+    image: postgres:16-alpine
+    container_name: yov-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: yazokulu
+      POSTGRES_PASSWORD: yazokulu123
+      POSTGRES_DB: yazokulu_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis Cache (Sık yapılan genel aramalar için)
+  redis:
+    image: redis:7-alpine
+    container_name: yov-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

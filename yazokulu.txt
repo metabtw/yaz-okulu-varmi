@@ -1,0 +1,102 @@
+1. Proje Tanımı: "Yaz Okulu Var mı?" SaaS PlatformuBu proje; 
+Türkiye'deki üniversitelerin yaz okulu ders bilgilerini standardize eden, 
+üniversite yetkililerine kendi verilerini yönetme imkanı tanıyan (SaaS) ve 
+öğrencilere akıllı filtreleme ile karar desteği sunan merkezi bir platformdur.
+Temel Fark: Sadece veri çeken bir bot değil; üniversitelerin resmi olarak 
+veri girişi yaptığı ve bu veriyi kendi sitelerine bir "widget" olarak 
+gömebildiği yaşayan bir ekosistemdir.
+
+2. Teknoloji Yığını (Tech Stack)Yapay zekanın en az hata yapacağı ve 
+modern standartlara en uygun yapı:
+Frontend: Next.js 14+ (App Router),TypeScript,Tailwind CSS, Shadcn/UI (UI bileşenleri için).
+
+Backend: NestJS (Modüler mimari), 
+PostgreSQL (Veritabanı).ORM: 
+Prisma (Veritabanı sorgularını yapay zekanın en iyi yazdığı araçtır).
+Auth: Clerk veya NextAuth.js (Role-based access control - RBAC desteği ile).
+Deployment: Vercel (Frontend), Railway veya Render (Backend/DB).
+
+3. Kullanıcı Rolleri ve Sayfa Yapıları
+A. 
+Öğrenci (Public - Yetkisiz)Ana Sayfa: 3D Türkiye haritası (Three.js) ve 
+merkezi ders arama çubuğu
+Arama Sonuçları: Filtrelerin (Ücret, Şehir, Uzaktan Eğitim) bulunduğu liste 
+görünümü.
+Üniversite/Ders Detay: Dersin içeriği, AKTS'si ve başvuru linki.
+
+B. Üniversite Editörü (Yetkili)Dashboard: Okula ait derslerin görüntülenme 
+istatistikleri.Ders Yönetimi: Yeni ders ekleme, silme, güncelleme (CRUD).
+Profil Yönetimi: Okul logosu, web sitesi ve iletişim bilgileri.
+Widget Ayarları: Kendi sitelerine gömecekleri tablonun renk ve stil ayarları.
+
+C. 
+Sistem Admini 
+Üniversite Onay: Paneli kullanmak isteyen üniversite hesaplarını onaylama.
+Scraper Kontrol: Otomatik veri çekme botlarının durumunu izleme ve manuel tetikleme.
+Global İstatistikler: Platformun toplam trafiği ve popüler derslerin takibi.
+
+4.
+ Veri Modeli ve Veritabanı (Prisma Schema)Yapay zekaya bu şemayı verirsen tüm 
+ veritabanı yapısını hatasız kuracaktır:
+ Kod snippet'i
+ 
+ enum Role { STUDENT, UNIVERSITY, ADMIN }
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  role          Role      @default(STUDENT)
+  universityId  String?   // Sadece UNIVERSITY rolü için
+  university    University? @relation(fields: [universityId], references: [id])
+}
+
+model University {
+  id          String   @id @default(cuid())
+  name        String
+  city        String
+  logo        String?
+  courses     Course[]
+  users       User[]
+  isVerified  Boolean  @default(false)
+}
+
+model Course {
+  id            String     @id @default(cuid())
+  name          String
+  code          String
+  ects          Int
+  price         Float?
+  isOnline      Boolean    @default(false)
+  universityId  String
+  university    University @relation(fields: [universityId], references: [id])
+  updatedAt     DateTime   @updatedAt
+}
+
+5. API Endpoint Tasarımı ve Yetkilendirme
+
+Metod,Endpoint,Yetki,Açıklama
+GET,/api/courses,Herkes,Filtrelere göre dersleri getirir.
+POST,/api/auth/register,Herkes,Kullanıcı kaydı.
+POST,/api/university/courses,University,Yeni bir yaz okulu dersi ekler.
+PATCH,/api/admin/verify/{id},Admin,Bir üniversite hesabını onaylar.
+GET,/api/widget/{univId},Herkes,Dış siteler için ders listesini JSON döner.
+
+"Check JWT role claim in middleware and redirect students to home page if they try to access /dashboard.
+
+6. Veri Akış Diyagramı
+Giriş: Üniversite yetkilisi dersi panele girer.
+
+İşleme: NestJS backend veriyi doğrular (Validation) ve PostgreSQL'e kaydeder.
+
+Dağıtım: * Öğrenci ana sitede arama yaptığında bu veri görünür.
+
+Üniversitenin kendi sitesindeki "Widget" anında güncellenir.
+
+Takip: Öğrenci "Detay" butonuna bastığında API üzerinden bir log tutulur (Makale için istatistik verisi).
+
+
+"Zod kullan:" API isteklerinde veri tipini doğrulamak için (Örn: AKTS eksi değer olamaz).
+
+"Server Actions kullan:" Next.js tarafında form işlemlerini en modern yöntemle yapması için.
+
+"Responsive Design:" "Tüm sayfaları mobil öncelikli (Mobile-first) tasarla."

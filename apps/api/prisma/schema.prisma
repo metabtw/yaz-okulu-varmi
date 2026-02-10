@@ -1,0 +1,129 @@
+// ============================================================
+// Yaz Okulu Var mı? - Prisma Veritabanı Şeması
+// Tüm veritabanı modelleri, ilişkileri ve index tanımları.
+// Multitenancy: Her üniversite sadece kendi verisine erişebilir.
+// ============================================================
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+// NOT: Üretim ortamında provider "postgresql" olarak değiştirilmelidir.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ---- Roller ve Durumlar ----
+// SQLite enum desteklemez; role ve status alanları String olarak tutulur.
+// Role geçerli değerler: "STUDENT", "UNIVERSITY", "ADMIN"
+// UserStatus geçerli değerler: "PENDING", "APPROVED", "REJECTED", "ACTIVE"
+// Üretim ortamında PostgreSQL'e geçildiğinde enum'a dönüştürülecektir.
+
+// ---- Modeller ----
+
+/// Üniversite modeli - SaaS kiracı (tenant) birimi
+model University {
+  id           String   @id @default(cuid())
+  name         String   @unique // Üniversite adı benzersiz olmalı
+  slug         String   @unique // URL dostu isim (örn: istanbul-teknik-universitesi)
+  city         String              // Şehir bilgisi (Filtreleme için)
+  logo         String?             // Logo URL'si
+  website      String?             // Üniversite web sitesi
+  contactEmail String?             // İletişim e-postası
+  isVerified   Boolean  @default(false) // Admin tarafından onay durumu
+
+  // Widget konfigürasyonu - JSON string olarak tutulur (SQLite uyumlu)
+  widgetConfig String?  @default("{\"primaryColor\": \"#1e40af\", \"theme\": \"light\"}")
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // İlişkiler
+  users        User[]   // Bu üniversiteye bağlı yetkili kullanıcılar
+  courses      Course[] // Üniversitenin açtığı yaz okulu dersleri
+
+  @@index([city])        // Şehir bazlı filtreleme performansı
+  @@index([isVerified])  // Onaylı üniversite sorguları
+}
+
+/// Kullanıcı modeli - Tüm roller için tek tablo
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String               // bcrypt ile hashlenmiş şifre
+  fullName     String?               // Tam ad
+  role         String      @default("STUDENT") // STUDENT | UNIVERSITY | ADMIN
+  status       String      @default("ACTIVE")  // PENDING | APPROVED | REJECTED | ACTIVE
+
+  // Multitenancy bağlantısı: UNIVERSITY rolü için zorunlu
+  universityId String?
+  university   University? @relation(fields: [universityId], references: [id])
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([role])          // Rol bazlı sorgulama
+  @@index([status])        // Durum bazlı sorgulama (Pending onay listesi)
+  @@index([universityId])  // Üniversite bazlı kullanıcı listeleme
+}
+
+/// Ders modeli - Yaz okulu ders bilgileri
+model Course {
+  id             String     @id @default(cuid())
+  code           String               // Ders kodu (örn: MAT101)
+  name           String               // Ders adı (örn: Matematik I)
+  ects           Int                  // AKTS kredisi
+  price          Float?                // Ücret (SQLite'da Decimal yok, Float kullanılır)
+  currency       String     @default("TRY")
+  isOnline       Boolean    @default(false) // Uzaktan eğitim seçeneği
+  description    String?              // Ders açıklaması
+  applicationUrl String?              // Başvuru/kayıt linki
+  quota          Int?                 // Kontenjan bilgisi
+  startDate      DateTime?            // Ders başlangıç tarihi
+  endDate        DateTime?            // Ders bitiş tarihi
+
+  // İlişki - Hangi üniversiteye ait
+  universityId   String
+  university     University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  // Performans index'leri - Sık yapılan sorguları hızlandırır
+  @@index([name])                    // İsimle arama
+  @@index([code])                    // Kodla arama
+  @@index([universityId])            // Üniversite bazlı listeleme
+  @@index([isOnline])                // Online filtresi
+  @@index([name, code, universityId]) // Bileşik index - Genel arama sorgusu
+}
+
+/// Arama logu - Akademik makale için istatistiksel veri toplama
+model SearchLog {
+  id          String   @id @default(cuid())
+  searchQuery String?            // Kullanıcının yazdığı arama metni
+  filters     String?            // Uygulanan filtreler JSON string olarak
+  resultCount Int                // Kaç sonuç döndüğü
+  ipHash      String?            // Anonimleştirilmiş IP (SHA-256 hash)
+  userAgent   String?            // Tarayıcı bilgisi (mobil/desktop analizi)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])           // Tarih bazlı raporlama
+  @@index([searchQuery])         // Popüler arama analizi
+}
+
+/// Aktivite logu - Güvenlik denetimi ve değişiklik takibi (Audit Trail)
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String             // İşlemi yapan kullanıcı ID'si
+  action    String             // İşlem tipi: COURSE_CREATE, COURSE_UPDATE, UNIVERSITY_VERIFY vb.
+  entity    String?            // Etkilenen varlık tipi: Course, University
+  entityId  String?            // Etkilenen varlık ID'si
+  details   String?            // Değişiklik detayları JSON string olarak
+  ipAddress String?            // İşlem yapılan IP
+  createdAt DateTime @default(now())
+
+  @@index([userId])            // Kullanıcı bazlı aktivite geçmişi
+  @@index([action])            // İşlem tipi bazlı filtreleme
+  @@index([createdAt])         // Zaman bazlı sorgulama
+}
