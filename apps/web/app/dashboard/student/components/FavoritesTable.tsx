@@ -5,9 +5,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Trash2, ExternalLink } from 'lucide-react';
+import { Trash2, ExternalLink, GitCompare } from 'lucide-react';
 import { useFavoritesOptional } from '@/contexts/favorites-context';
+import { useCompareOptional } from '@/contexts/compare-context';
 import { studentApi } from '@/lib/api';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Course {
   id: string;
@@ -27,6 +29,7 @@ export function FavoritesTable({ favorites, onRemoved }: FavoritesTableProps) {
   const [items, setItems] = useState(favorites);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const ctx = useFavoritesOptional();
+  const compareCtx = useCompareOptional();
 
   const removeFavorite = async (courseId: string) => {
     setRemovingId(courseId);
@@ -88,7 +91,30 @@ export function FavoritesTable({ favorites, onRemoved }: FavoritesTableProps) {
                 {course.price != null ? `${course.price} ${course.currency}` : 'Ücretsiz'}
               </p>
             </div>
-            <div className="flex gap-2 shrink-0 ml-2">
+            <div className="flex items-center gap-2 shrink-0 ml-2">
+              {compareCtx && (
+                <div
+                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Checkbox
+                    id={`fav-compare-${course.id}`}
+                    checked={compareCtx.isInCompare(course.id)}
+                    onCheckedChange={(checked) => {
+                      if (checked) compareCtx.addToCompare(course.id);
+                      else compareCtx.removeFromCompare(course.id);
+                    }}
+                    disabled={!compareCtx.isInCompare(course.id) && !compareCtx.canAddMore}
+                  />
+                  <label
+                    htmlFor={`fav-compare-${course.id}`}
+                    className="text-xs text-slate-600 cursor-pointer flex items-center gap-1"
+                  >
+                    <GitCompare className="w-3 h-3" />
+                    Karşılaştır
+                  </label>
+                </div>
+              )}
               <Link
                 href={`/courses/${course.id}`}
                 className="p-2 rounded-lg hover:bg-slate-100 transition-colors"

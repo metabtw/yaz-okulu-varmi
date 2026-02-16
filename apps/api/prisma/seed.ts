@@ -5,7 +5,6 @@
  */
 import { PrismaClient, Role, UserStatus } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
-import { Decimal } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
 
@@ -82,15 +81,15 @@ async function main() {
   });
   console.log('Üniversite yetkilileri oluşturuldu');
 
-  // 4. Örnek dersler oluştur
+  // 4. Örnek dersler oluştur (Prisma Decimal number kabul eder)
   const courses = [
-    { code: 'MAT101', name: 'Matematik I', ects: 6, price: new Decimal(3500), isOnline: false, universityId: uni1.id },
-    { code: 'FIZ101', name: 'Fizik I', ects: 4, price: new Decimal(2800), isOnline: false, universityId: uni1.id },
-    { code: 'BIL101', name: 'Bilgisayar Programlama', ects: 5, price: new Decimal(4000), isOnline: true, universityId: uni1.id },
-    { code: 'MAT201', name: 'Diferansiyel Denklemler', ects: 4, price: new Decimal(3000), isOnline: false, universityId: uni2.id },
-    { code: 'ENG101', name: 'İngilizce I', ects: 3, price: new Decimal(2000), isOnline: true, universityId: uni2.id },
-    { code: 'KIM101', name: 'Genel Kimya', ects: 5, price: new Decimal(2500), isOnline: false, universityId: uni3.id },
-    { code: 'BIO101', name: 'Genel Biyoloji', ects: 4, price: new Decimal(2200), isOnline: true, universityId: uni3.id },
+    { code: 'MAT101', name: 'Matematik I', ects: 6, price: 3500, isOnline: false, universityId: uni1.id },
+    { code: 'FIZ101', name: 'Fizik I', ects: 4, price: 2800, isOnline: false, universityId: uni1.id },
+    { code: 'BIL101', name: 'Bilgisayar Programlama', ects: 5, price: 4000, isOnline: true, universityId: uni1.id },
+    { code: 'MAT201', name: 'Diferansiyel Denklemler', ects: 4, price: 3000, isOnline: false, universityId: uni2.id },
+    { code: 'ENG101', name: 'İngilizce I', ects: 3, price: 2000, isOnline: true, universityId: uni2.id },
+    { code: 'KIM101', name: 'Genel Kimya', ects: 5, price: 2500, isOnline: false, universityId: uni3.id },
+    { code: 'BIO101', name: 'Genel Biyoloji', ects: 4, price: 2200, isOnline: true, universityId: uni3.id },
   ];
 
   for (const course of courses) {

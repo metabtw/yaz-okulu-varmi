@@ -9,7 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import {
-  LayoutDashboard, BookOpen, Building2, Clock, Settings, LogOut, MapPin
+  LayoutDashboard, BookOpen, Building2, Clock, Settings, LogOut, MapPin, BarChart3
 } from 'lucide-react';
 
 interface NavItem {
@@ -17,11 +17,13 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   adminOnly?: boolean;
+  universityOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Genel Bakış', icon: LayoutDashboard },
   { href: '/dashboard/courses', label: 'Ders Yönetimi', icon: BookOpen },
+  { href: '/dashboard/university', label: 'Analitik Dashboard', icon: BarChart3, universityOnly: true },
   { href: '/dashboard/universities', label: 'Üniversite Yönetimi', icon: Building2, adminOnly: true },
   { href: '/dashboard/pending', label: 'Onay Bekleyenler', icon: Clock, adminOnly: true },
   { href: '/dashboard/settings', label: 'Profil & Widget', icon: Settings },
@@ -59,6 +61,7 @@ export function DashboardNav() {
   const items = role === 'STUDENT' ? studentNavItems : navItems;
   const filteredItems = items.filter((item) => {
     if ('adminOnly' in item && item.adminOnly && role !== 'ADMIN') return false;
+    if ('universityOnly' in item && item.universityOnly && role !== 'UNIVERSITY') return false;
     return true;
   });
 

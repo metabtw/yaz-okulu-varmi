@@ -4,10 +4,12 @@
 'use client';
 
 import Link from 'next/link';
-import { BookOpen, Coins, Globe } from 'lucide-react';
+import { BookOpen, Coins, Globe, GitCompare } from 'lucide-react';
 import { useFavoritesOptional } from '@/contexts/favorites-context';
+import { useCompareOptional } from '@/contexts/compare-context';
 import { studentApi } from '@/lib/api';
 import { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Course {
   id: string;
@@ -32,6 +34,7 @@ export function RecommendationsSection({
   const [addingId, setAddingId] = useState<string | null>(null);
   const [localCourses, setLocalCourses] = useState(courses);
   const ctx = useFavoritesOptional();
+  const compareCtx = useCompareOptional();
 
   const handleAddFavorite = async (courseId: string) => {
     setAddingId(courseId);
@@ -107,14 +110,39 @@ export function RecommendationsSection({
                 )}
               </div>
             </Link>
-            <button
-              type="button"
-              onClick={() => handleAddFavorite(course.id)}
-              disabled={addingId === course.id}
-              className="mt-3 w-full py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
-            >
-              {addingId === course.id ? 'Ekleniyor...' : 'Favorilere Ekle'}
-            </button>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => handleAddFavorite(course.id)}
+                disabled={addingId === course.id}
+                className="flex-1 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {addingId === course.id ? 'Ekleniyor...' : 'Favorilere Ekle'}
+              </button>
+              {compareCtx && (
+                <div
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Checkbox
+                    id={`rec-compare-${course.id}`}
+                    checked={compareCtx.isInCompare(course.id)}
+                    onCheckedChange={(checked) => {
+                      if (checked) compareCtx.addToCompare(course.id);
+                      else compareCtx.removeFromCompare(course.id);
+                    }}
+                    disabled={!compareCtx.isInCompare(course.id) && !compareCtx.canAddMore}
+                  />
+                  <label
+                    htmlFor={`rec-compare-${course.id}`}
+                    className="text-xs text-slate-600 cursor-pointer flex items-center gap-1"
+                  >
+                    <GitCompare className="w-3 h-3" />
+                    Karşılaştır
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

@@ -109,6 +109,58 @@ export const universityApi = {
       method: 'PATCH',
       body: JSON.stringify(data),
     }),
+
+  // Dashboard analytics (UNIVERSITY rolü gerekli)
+  getDashboardOverview: () =>
+    fetchApi<{
+      totalCourses: number;
+      newCoursesLastMonth: number;
+      totalViews: number;
+      recentViews: number;
+      viewsChangePercent: number;
+      totalFavorites: number;
+      recentFavorites: number;
+      favoritesChangePercent: number;
+      totalApplicationClicks: number;
+      recentApplicationClicks: number;
+      applicationsChangePercent: number;
+    }>('/university/dashboard/overview'),
+
+  getPopularCourses: (limit?: number) =>
+    fetchApi<
+      Array<{
+        id: string;
+        name: string;
+        code: string;
+        ects: number;
+        price: number | null;
+        currency: string;
+        isOnline: boolean;
+        viewCount: number;
+        favoriteCount: number;
+        applicationClicks: number;
+        conversionRate: number;
+      }>
+    >(`/university/dashboard/popular-courses${limit ? `?limit=${limit}` : ''}`),
+
+  getTimeSeriesData: (days?: number) =>
+    fetchApi<{
+      dailyViews: Array<{ date: string; count: number }>;
+      dailyFavorites: Array<{ date: string; count: number }>;
+      dailyApplications: Array<{ date: string; count: number }>;
+    }>(`/university/dashboard/time-series${days ? `?days=${days}` : ''}`),
+
+  getCourseStatusStats: () =>
+    fetchApi<{
+      total: number;
+      withApplicationUrl: number;
+      withoutApplicationUrl: number;
+      withDates: number;
+      withoutDates: number;
+      online: number;
+      onsite: number;
+      healthScore: number;
+    }>('/university/dashboard/course-stats'),
 };
 
 // ---- User API ----

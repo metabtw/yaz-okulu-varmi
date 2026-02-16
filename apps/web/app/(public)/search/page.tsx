@@ -83,9 +83,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </p>
             </div>
 
-            {/* Ders Kartları Grid - sabit grid */}
+            {/* Ders Kartları Grid - geniş kartlar (2 sütun) */}
             {result.data && result.data.length > 0 ? (
-              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-5">
                 {result.data.map((course: Record<string, unknown>) => (
                   <CourseCard key={course.id as string} course={course} />
                 ))}

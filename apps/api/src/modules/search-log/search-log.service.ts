@@ -3,6 +3,7 @@
  * Akademik makale için: Popüler aramalar, şehir dağılımı, zaman serisi analizi.
  */
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 /** Arama logu girdi tipi */
@@ -25,7 +26,7 @@ export class SearchLogService {
     return this.prisma.searchLog.create({
       data: {
         searchQuery: input.searchQuery,
-        filters: input.filters as object, // PostgreSQL native JSON
+        filters: input.filters as Prisma.InputJsonValue,
         resultCount: input.resultCount,
         ipHash: input.ipHash,
         userAgent: input.userAgent,
@@ -51,7 +52,7 @@ export class SearchLogService {
       take: limit,
     });
 
-    return results.map((r) => ({
+    return results.map((r: { searchQuery: string | null; _count: { searchQuery: number } }) => ({
       query: r.searchQuery,
       count: r._count.searchQuery,
     }));

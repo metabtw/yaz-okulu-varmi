@@ -50,31 +50,50 @@ export function SearchHeader({ defaultSearchValue = '' }: SearchHeaderProps) {
           <div className="flex-1 max-w-xl">
             <SearchBar variant="compact" defaultValue={defaultSearchValue} />
           </div>
-          <div className="flex items-center gap-3 shrink-0">
+          <nav className="hidden lg:flex items-center gap-1">
+            <Link
+              href="/universities-for"
+              className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            >
+              Üniversiteler İçin
+            </Link>
+            <Link
+              href="/faq"
+              className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            >
+              Sıkça Sorulan Sorular
+            </Link>
+            <Link
+              href="/about"
+              className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            >
+              Hakkında
+            </Link>
+            <div className="w-px h-6 bg-white/10 mx-2" />
             {authState.loggedIn ? (
               <Link
-                href={authState.role === 'STUDENT' ? '/dashboard/student' : '/dashboard'}
-                className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-400 rounded-xl transition-all shadow-sm"
+                href="/dashboard"
+                className="ml-1 px-5 py-2.5 text-sm font-medium text-white bg-blue-500 hover:bg-blue-400 rounded-xl transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
               >
-                Hesabım
+                {authState.role === 'ADMIN' ? 'Admin Paneli' : authState.role === 'STUDENT' ? 'Öğrenci Paneli' : 'Hesabım'}   
               </Link>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-all"
+                  className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
                 >
                   Giriş Yap
                 </Link>
                 <Link
                   href="/register"
-                  className="hidden md:inline-flex px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-400 rounded-xl transition-all shadow-sm"
+                  className="ml-1 px-5 py-2.5 text-sm font-medium text-white bg-blue-500 hover:bg-blue-400 rounded-xl transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
                 >
                   Kayıt Ol
                 </Link>
               </>
             )}
-          </div>
+          </nav>
         </div>
       </div>
     </header>
