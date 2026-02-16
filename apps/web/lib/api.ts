@@ -4,7 +4,8 @@
  * Token yönetimi ve hata yakalama merkezi burasıdır.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const _base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const API_BASE_URL = _base.endsWith('/api') ? _base : `${_base.replace(/\/?$/, '')}/api`;
 
 /** Genel fetch wrapper - Hata yönetimi ve token ekleme. */
 async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
