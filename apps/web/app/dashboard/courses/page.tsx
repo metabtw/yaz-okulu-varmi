@@ -21,6 +21,9 @@ interface Course {
   description?: string;
   applicationUrl?: string;
   quota?: number | null;
+  startDate?: string;
+  endDate?: string;
+  applicationDeadline?: string;
   university?: { id: string; name: string; city: string };
   updatedAt: string;
 }
@@ -34,7 +37,9 @@ interface University {
 const emptyForm = {
   code: '', name: '', ects: '', price: '', isOnline: false,
   description: '', applicationUrl: '', universityId: '', quota: '',
+  startDate: '', endDate: '', applicationDeadline: '',
 };
+
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -96,7 +101,7 @@ export default function CoursesPage() {
 
   const openCreateForm = () => {
     setEditingId(null);
-    setFormData(emptyForm);
+    setFormData({ ...emptyForm });
     setShowForm(true);
   };
 
@@ -112,6 +117,9 @@ export default function CoursesPage() {
       applicationUrl: course.applicationUrl || '',
       universityId: course.university?.id || '',
       quota: course.quota ? String(course.quota) : '',
+      startDate: course.startDate ? course.startDate.split('T')[0] : '',
+      endDate: course.endDate ? course.endDate.split('T')[0] : '',
+      applicationDeadline: course.applicationDeadline ? course.applicationDeadline.split('T')[0] : '',
     });
     setShowForm(true);
   };
@@ -139,6 +147,9 @@ export default function CoursesPage() {
       if (formData.description) payload.description = formData.description;
       if (formData.applicationUrl) payload.applicationUrl = formData.applicationUrl;
       if (formData.quota) payload.quota = Number(formData.quota);
+      if (formData.startDate) payload.startDate = new Date(formData.startDate).toISOString();
+      if (formData.endDate) payload.endDate = new Date(formData.endDate).toISOString();
+      if (formData.applicationDeadline) payload.applicationDeadline = new Date(formData.applicationDeadline).toISOString();
 
       if (editingId) {
         // DÜZENLEME
@@ -309,6 +320,21 @@ export default function CoursesPage() {
                   min={0} placeholder="Örn: 50" className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
               </div>
               <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Ders Başlangıç Tarihi</label>
+                <input type="date" value={formData.startDate} onChange={(e) => updateField('startDate', e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Ders Bitiş Tarihi</label>
+                <input type="date" value={formData.endDate} onChange={(e) => updateField('endDate', e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">Son Başvuru Tarihi</label>
+                <input type="date" value={formData.applicationDeadline} onChange={(e) => updateField('applicationDeadline', e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">Başvuru Linki</label>
                 <input type="url" value={formData.applicationUrl} onChange={(e) => updateField('applicationUrl', e.target.value)}
                   placeholder="https://..." className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" />
@@ -388,9 +414,8 @@ export default function CoursesPage() {
                       {course.price ? `${Number(course.price).toLocaleString('tr-TR')} TL` : 'Ücretsiz'}
                     </td>
                     <td className="px-5 py-4 text-center">
-                      <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium ${
-                        course.isOnline ? 'bg-violet-50 text-violet-600' : 'bg-emerald-50 text-emerald-600'
-                      }`}>
+                      <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium ${course.isOnline ? 'bg-violet-50 text-violet-600' : 'bg-emerald-50 text-emerald-600'
+                        }`}>
                         {course.isOnline ? 'Online' : 'Yüzyüze'}
                       </span>
                     </td>

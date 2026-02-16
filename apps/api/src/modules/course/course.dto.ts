@@ -39,6 +39,7 @@ export const CreateCourseSchema = z.object({
     .nullable(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
+  applicationDeadline: z.string().datetime().optional(),
 });
 
 export type CreateCourseDto = z.infer<typeof CreateCourseSchema>;
@@ -57,6 +58,7 @@ export const UpdateCourseSchema = z.object({
   quota: z.number().int().min(1).optional().nullable(),
   startDate: z.string().datetime().optional().nullable(),
   endDate: z.string().datetime().optional().nullable(),
+  applicationDeadline: z.string().datetime().optional().nullable(),
 });
 
 export type UpdateCourseDto = z.infer<typeof UpdateCourseSchema>;

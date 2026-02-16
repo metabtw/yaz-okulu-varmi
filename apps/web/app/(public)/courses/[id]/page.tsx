@@ -167,6 +167,14 @@ export default async function CourseDetailPage({ params }: CourseDetailProps) {
                           </td>
                         </tr>
                       )}
+                      {course.applicationDeadline && (
+                        <tr className="border-b border-slate-50">
+                          <td className="py-3 px-4 text-slate-600">Son Başvuru Tarihi</td>
+                          <td className="py-3 px-4 font-medium text-slate-900">
+                            {new Date(course.applicationDeadline).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </td>
+                        </tr>
+                      )}
                       <tr>
                         <td className="py-3 px-4 text-slate-600">Sure</td>
                         <td className="py-3 px-4 font-medium text-slate-900">
@@ -260,6 +268,17 @@ export default async function CourseDetailPage({ params }: CourseDetailProps) {
                       <p className="text-xs text-slate-500">Bitis</p>
                       <p className="text-sm font-medium text-slate-900">
                         {new Date(course.endDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {course.applicationDeadline && (
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-red-400" />
+                    <div>
+                      <p className="text-xs text-slate-500">Son Başvuru</p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {new Date(course.applicationDeadline).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </p>
                     </div>
                   </div>
