@@ -251,6 +251,11 @@ chmod +x scripts/deploy-server.sh
 - seed.ts artık `Decimal` import etmeden number kullanıyor
 - Güncel kodu pull edin
 
+### API 404 - "/api/api/courses" (çift /api)
+- next.config.js rewrite düzeltildi
+- `.env.local` için: `NEXT_PUBLIC_API_URL` = `http://SUNUCU_IP:4000/api` (client)
+- `API_URL` = `http://localhost:4000` (server-side, /api olmadan)
+
 ---
 
 ## Örnek Giriş Bilgileri (Seed sonrası)
