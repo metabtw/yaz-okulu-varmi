@@ -98,6 +98,7 @@ model Course {
   quota          Int?                 // Kontenjan bilgisi
   startDate      DateTime?            // Ders başlangıç tarihi
   endDate        DateTime?            // Ders bitiş tarihi
+  applicationDeadline DateTime?        // Son başvuru tarihi
 
   // İlişki - Hangi üniversiteye ait
   universityId   String

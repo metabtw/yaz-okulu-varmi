@@ -18,7 +18,10 @@ import { Copy, Check, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { userApi } from '@/lib/api';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+
+// NEXT_PUBLIC_API_URL zaten /api ile bittiği için temiz base URL'e ihtiyaç var
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api').replace(/\/api$/, '');
+
 
 export function WidgetSection() {
   const [university, setUniversity] = useState<{

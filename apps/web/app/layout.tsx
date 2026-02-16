@@ -8,6 +8,7 @@ import './globals.css';
 import { FavoritesProvider } from '@/contexts/favorites-context';
 import { CompareProvider } from '@/contexts/compare-context';
 import { CompareFloatingButton } from '@/components/compare/CompareFloatingButton';
+import { AuthLoadingOverlay } from '@/components/layout/AuthLoadingOverlay';
 import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -34,6 +35,7 @@ export default function RootLayout({
           </CompareProvider>
         </FavoritesProvider>
         <Toaster position="top-right" richColors />
+        <AuthLoadingOverlay />
       </body>
     </html>
   );
