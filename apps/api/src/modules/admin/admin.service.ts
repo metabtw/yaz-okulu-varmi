@@ -257,7 +257,10 @@ export class AdminService {
       orderBy: { _count: { searchQuery: 'desc' } },
       take: limit,
     });
-    return results.map((r) => ({ query: r.searchQuery, count: r._count.searchQuery }));
+    return results.map((r: { searchQuery: string | null; _count: { searchQuery: number } }) => ({
+      query: r.searchQuery,
+      count: r._count.searchQuery,
+    }));
   }
 
   /** Slug oluşturucu */

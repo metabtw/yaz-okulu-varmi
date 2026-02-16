@@ -45,9 +45,17 @@ export function middleware(request: NextRequest) {
     const role = payload.role as string;
     const status = payload.status as string;
 
-    // STUDENT rolü dashboard'a erişemez
+    // STUDENT rolü sadece /dashboard/student'e erişebilir
     if (role === 'STUDENT') {
-      return NextResponse.redirect(new URL('/', request.url));
+      if (!pathname.startsWith('/dashboard/student')) {
+        return NextResponse.redirect(new URL('/dashboard/student', request.url));
+      }
+      return NextResponse.next();
+    }
+
+    // UNIVERSITY/ADMIN: /dashboard/student'e erişemez
+    if (pathname.startsWith('/dashboard/student') && role !== 'STUDENT') {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
     // UNIVERSITY rolü ama PENDING/APPROVED (henüz ACTIVE değil) -> onay sayfasına
@@ -83,7 +91,9 @@ export function middleware(request: NextRequest) {
     if (token) {
       const payload = decodeJwtPayload(token);
       if (payload && (payload.status as string) === 'ACTIVE') {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        const role = payload.role as string;
+        const redirectUrl = role === 'STUDENT' ? '/dashboard/student' : '/dashboard';
+        return NextResponse.redirect(new URL(redirectUrl, request.url));
       }
     }
   }

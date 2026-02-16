@@ -12,6 +12,7 @@ import { CourseModule } from './modules/course/course.module';
 import { SearchLogModule } from './modules/search-log/search-log.module';
 import { WidgetModule } from './modules/widget/widget.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { StudentModule } from './modules/student/student.module';
 
 /** Health Check endpoint - GET / */
 @Controller()
@@ -40,6 +41,7 @@ class HealthController {
     SearchLogModule,
     WidgetModule,
     AdminModule,
+    StudentModule,
   ],
   controllers: [HealthController],
 })

@@ -5,9 +5,10 @@
 import { Module } from '@nestjs/common';
 import { UniversityService } from './university.service';
 import { UniversityController } from './university.controller';
+import { UniversityDashboardController } from './university-dashboard.controller';
 
 @Module({
-  controllers: [UniversityController],
+  controllers: [UniversityController, UniversityDashboardController],
   providers: [UniversityService],
   exports: [UniversityService],
 })

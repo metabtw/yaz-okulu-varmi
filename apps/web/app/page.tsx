@@ -75,7 +75,7 @@ export default function HomePage() {
         </div>
 
         {/* Smooth fade - sadece çok ince bir geçiş */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/80 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/99 to-transparent" />
       </section>
 
       {/* ======== STATS STRIP ======== */}
@@ -127,7 +127,7 @@ export default function HomePage() {
                   }`}>
                     <feature.icon className="w-6 h-6" />
                   </div>
-                  <span className="text-4xl font-bold text-slate-100 group-hover:text-blue-50 transition-colors">
+                  <span className="text-4xl font-bold text-black group-hover:text-blue-50 transition-colors">
                     {feature.step}
                   </span>
                 </div>

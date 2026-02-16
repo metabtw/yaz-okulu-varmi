@@ -4,6 +4,9 @@
  */
 import Link from 'next/link';
 import { Footer } from '@/components/layout/footer';
+import { TrackCourseView } from '@/components/course/TrackCourseView';
+import { FavoriteButton } from '@/components/course/FavoriteButton';
+import { CompareButton } from '@/components/course/CompareButton';
 import {
   MapPin, BookOpen, Globe, Calendar, ExternalLink, ArrowLeft,
   Clock, GraduationCap, Building2, CheckCircle2, Coins, Users
@@ -42,6 +45,7 @@ export default async function CourseDetailPage({ params }: CourseDetailProps) {
 
   return (
     <main className="min-h-screen bg-slate-50/50">
+      <TrackCourseView courseId={course.id} />
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -229,6 +233,12 @@ export default async function CourseDetailPage({ params }: CourseDetailProps) {
                   Basvuru linki henuz eklenmemis
                 </div>
               )}
+
+              {/* Favorilere Ekle */}
+              <FavoriteButton courseId={course.id} variant="detail" />
+
+              {/* Karşılaştırmaya Ekle */}
+              <CompareButton courseId={course.id} />
 
               {/* Key Details */}
               <div className="space-y-4">

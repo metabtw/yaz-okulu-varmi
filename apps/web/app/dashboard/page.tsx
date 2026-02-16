@@ -135,6 +135,15 @@ export default function DashboardPage() {
             title="Ders Yönetimi"
             desc="Dersleri görüntüle, ekle ve düzenle"
           />
+          {role === 'UNIVERSITY' && (
+            <QuickAction
+              href="/dashboard/university"
+              icon={TrendingUp}
+              color="violet"
+              title="Analitik Dashboard"
+              desc="Görüntülenme, favori ve başvuru istatistikleri"
+            />
+          )}
           {role === 'ADMIN' && (
             <>
               <QuickAction

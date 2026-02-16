@@ -65,10 +65,16 @@ model User {
   fullName     String?               // Tam ad
   role         Role        @default(STUDENT)
   status       UserStatus  @default(ACTIVE)
+  department   String?               // Bölüm (öğrenci için)
+  preferredCities Json?               // Tercih edilen şehirler (öğrenci için)
 
   // Multitenancy bağlantısı: UNIVERSITY rolü için zorunlu
   universityId String?
   university   University? @relation(fields: [universityId], references: [id])
+
+  // Öğrenci ilişkileri
+  favorites    UserFavorite[]
+  interactions UserInteraction[]
 
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -97,6 +103,12 @@ model Course {
   universityId   String
   university     University @relation(fields: [universityId], references: [id], onDelete: Cascade)
 
+  viewCount     Int        @default(0) // Popülerlik için görüntülenme sayısı
+
+  // Öğrenci ilişkileri
+  favoritedBy     UserFavorite[]
+  interactions    UserInteraction[]
+
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
@@ -116,10 +128,12 @@ model SearchLog {
   resultCount Int                // Kaç sonuç döndüğü
   ipHash      String?            // Anonimleştirilmiş IP (SHA-256 hash)
   userAgent   String?            // Tarayıcı bilgisi (mobil/desktop analizi)
+  userId      String?            // Giriş yapmış öğrenci (opsiyonel)
   createdAt   DateTime @default(now())
 
   @@index([createdAt])           // Tarih bazlı raporlama
   @@index([searchQuery])         // Popüler arama analizi
+  @@index([userId])              // Öğrenci arama geçmişi
 }
 
 /// Aktivite logu - Güvenlik denetimi ve değişiklik takibi (Audit Trail)
@@ -136,4 +150,32 @@ model ActivityLog {
   @@index([userId])            // Kullanıcı bazlı aktivite geçmişi
   @@index([action])            // İşlem tipi bazlı filtreleme
   @@index([createdAt])         // Zaman bazlı sorgulama
+}
+
+/// Öğrenci favori dersleri
+model UserFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+/// Öğrenci ders etkileşimleri (görüntüleme, başvuru vb.)
+model UserInteraction {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  actionType String   // VIEW, FAVORITE, APPLY
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, actionType])
 }

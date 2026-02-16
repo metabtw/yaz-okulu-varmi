@@ -110,3 +110,14 @@ html {
 .card-lift:hover {
   transform: translateY(-4px);
 }
+
+/* Print - Karşılaştırma PDF export */
+@media print {
+  .print\:hidden {
+    display: none !important;
+  }
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

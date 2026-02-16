@@ -6,8 +6,11 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle2, ChevronRight, BookOpen, Globe, MapPin, Coins } from 'lucide-react';
+import { CheckCircle2, ChevronRight, BookOpen, Globe, MapPin, Coins, GitCompare } from 'lucide-react';
 import { useState } from 'react';
+import { FavoriteButton } from '@/components/course/FavoriteButton';
+import { useCompareOptional } from '@/contexts/compare-context';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface University {
   id: string;
@@ -35,6 +38,7 @@ interface CourseCardProps {
 
 export function CourseCard({ course }: CourseCardProps) {
   const [hovered, setHovered] = useState(false);
+  const compareCtx = useCompareOptional();
 
   const c = course as Record<string, unknown>;
   const id = String(c.id || '');
@@ -68,6 +72,8 @@ export function CourseCard({ course }: CourseCardProps) {
           }`}
         />
 
+        <FavoriteButton courseId={id} variant="card" />
+
         <div className="p-5 sm:p-6 flex flex-col flex-1">
           {/* Header: Üniversite bilgisi + Onaylı badge */}
           <div className="flex items-start justify-between mb-3">
@@ -88,10 +94,7 @@ export function CourseCard({ course }: CourseCardProps) {
               </div>
             </div>
 
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 shrink-0">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span className="text-xs font-medium">Onaylı</span>
-            </div>
+
           </div>
 
           {/* Ders başlığı */}
@@ -131,12 +134,43 @@ export function CourseCard({ course }: CourseCardProps) {
             )}
           </div>
 
-          {/* CTA */}
-          <div className={`flex items-center text-sm font-medium text-blue-500 mt-3 pt-3 border-t border-slate-100 transition-all duration-300 ${
+          {/* CTA: Detayları Gör + Karşılaştır yan yana */}
+          <div className={`flex items-center gap-3 mt-4 pt-4 border-t border-slate-100 transition-all duration-300 ${
             hovered ? 'opacity-100' : 'opacity-50'
           }`}>
-            Detayları Gör
-            <ChevronRight className="w-4 h-4 ml-1" />
+            <span className="flex items-center text-sm font-medium text-blue-500 flex-1 min-w-0">
+              Detayları Gör
+              <ChevronRight className="w-4 h-4 ml-1 shrink-0" />
+            </span>
+            {compareCtx && (
+              <div
+                className="flex items-center gap-1.5 shrink-0"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Checkbox
+                  id={`compare-${id}`}
+                  checked={compareCtx.isInCompare(id)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      compareCtx.addToCompare(id);
+                    } else {
+                      compareCtx.removeFromCompare(id);
+                    }
+                  }}
+                  disabled={!compareCtx.isInCompare(id) && !compareCtx.canAddMore}
+                />
+                <label
+                  htmlFor={`compare-${id}`}
+                  className="text-xs text-slate-500 cursor-pointer select-none flex items-center gap-1"
+                >
+                  <GitCompare className="w-3 h-3" />
+                  Karşılaştır
+                </label>
+              </div>
+            )}
           </div>
         </div>
       </div>
