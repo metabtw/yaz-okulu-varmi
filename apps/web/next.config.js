@@ -10,11 +10,13 @@ const nextConfig = {
     ],
   },
   // Backend API proxy (CORS sorunlarını önler)
+  // API_URL: backend base (örn. http://localhost:4000) - /api eklenmemeli
   async rewrites() {
+    const apiBase = (process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/api\/?$/, '');
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/:path*`,
+        destination: `${apiBase}/api/:path*`,
       },
     ];
   },
