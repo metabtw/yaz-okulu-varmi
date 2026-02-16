@@ -67,6 +67,13 @@ export const courseApi = {
 
   getById: (id: string) => fetchApi<Record<string, unknown>>(`/courses/${id}`),
 
+  compare: (courseIds: string[]) =>
+    fetchApi<{
+      courses: Array<Record<string, unknown>>;
+      analysis: Record<string, unknown>;
+      comparedAt: string;
+    }>(`/courses/compare?ids=${courseIds.join(',')}`),
+
   getMyUniversityCourses: () => fetchApi<unknown[]>('/university/courses'),
 
   create: (data: Record<string, unknown>) =>

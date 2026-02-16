@@ -6,6 +6,9 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { FavoritesProvider } from '@/contexts/favorites-context';
+import { CompareProvider } from '@/contexts/compare-context';
+import { CompareFloatingButton } from '@/components/compare/CompareFloatingButton';
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,7 +27,13 @@ export default function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <body className={inter.className}>
-        <FavoritesProvider>{children}</FavoritesProvider>
+        <FavoritesProvider>
+          <CompareProvider>
+            {children}
+            <CompareFloatingButton />
+          </CompareProvider>
+        </FavoritesProvider>
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

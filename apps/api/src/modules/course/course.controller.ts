@@ -19,6 +19,7 @@ import {
   UseGuards,
   Req,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CourseService } from './course.service';
@@ -71,6 +72,19 @@ export class CourseController {
     const userAgent = req.headers['user-agent'] || undefined;
 
     return this.courseService.search(dto, ipHash, userAgent);
+  }
+
+  /** Public: Ders karşılaştırma (2-4 ders) */
+  @Get('courses/compare')
+  async compareCourses(@Query('ids') ids: string) {
+    if (!ids || typeof ids !== 'string') {
+      throw new BadRequestException("Ders ID'leri gerekli");
+    }
+    const courseIds = ids
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+    return this.courseService.compareCourses(courseIds);
   }
 
   /** Public: Ders detayı */

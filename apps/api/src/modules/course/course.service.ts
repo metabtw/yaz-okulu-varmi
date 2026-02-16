@@ -7,6 +7,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -225,5 +226,84 @@ export class CourseService {
       where: { universityId },
       orderBy: { updatedAt: 'desc' },
     });
+  }
+
+  /**
+   * Ders karşılaştırma - 2-4 ders seçilerek analiz ve tablo döner.
+   * Fiyat, AKTS, online/yüz yüze, şehir dağılımı analizi.
+   */
+  async compareCourses(courseIds: string[]) {
+    if (courseIds.length < 2) {
+      throw new BadRequestException('En az 2 ders seçmelisiniz');
+    }
+    if (courseIds.length > 4) {
+      throw new BadRequestException('En fazla 4 ders karşılaştırabilirsiniz');
+    }
+
+    const courses = await this.prisma.course.findMany({
+      where: { id: { in: courseIds } },
+      include: {
+        university: {
+          select: {
+            id: true,
+            name: true,
+            city: true,
+            logo: true,
+            website: true,
+          },
+        },
+      },
+      orderBy: { price: 'asc' },
+    });
+
+    if (courses.length !== courseIds.length) {
+      throw new NotFoundException('Bazı dersler bulunamadı');
+    }
+
+    await this.prisma.course.updateMany({
+      where: { id: { in: courseIds } },
+      data: { viewCount: { increment: 1 } },
+    });
+
+    const prices = courses.map((c) => Number(c.price ?? 0));
+    const ectsValues = courses.map((c) => c.ects);
+
+    const analysis = {
+      cheapest: courses.reduce((prev, curr) =>
+        Number(curr.price ?? 0) < Number(prev.price ?? 0) ? curr : prev,
+      ),
+      mostExpensive: courses.reduce((prev, curr) =>
+        Number(curr.price ?? 0) > Number(prev.price ?? 0) ? curr : prev,
+      ),
+      mostEcts: courses.reduce((prev, curr) =>
+        curr.ects > prev.ects ? curr : prev,
+      ),
+      leastEcts: courses.reduce((prev, curr) =>
+        curr.ects < prev.ects ? curr : prev,
+      ),
+      onlineCount: courses.filter((c) => c.isOnline).length,
+      onsiteCount: courses.filter((c) => !c.isOnline).length,
+      stats: {
+        avgPrice:
+          prices.reduce((a, b) => a + b, 0) / (prices.length || 1),
+        minPrice: Math.min(...prices),
+        maxPrice: Math.max(...prices),
+        avgEcts:
+          ectsValues.reduce((a, b) => a + b, 0) / (ectsValues.length || 1),
+        minEcts: Math.min(...ectsValues),
+        maxEcts: Math.max(...ectsValues),
+        totalCourses: courses.length,
+      },
+      cities: [...new Set(courses.map((c) => c.university.city))],
+      cityCount: new Set(courses.map((c) => c.university.city)).size,
+      universities: [...new Set(courses.map((c) => c.university.name))],
+      universityCount: new Set(courses.map((c) => c.university.name)).size,
+    };
+
+    return {
+      courses,
+      analysis,
+      comparedAt: new Date().toISOString(),
+    };
   }
 }

@@ -6,6 +6,10 @@
 
 import { useEffect, useState } from 'react';
 import { studentApi } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { GitCompare } from 'lucide-react';
+import { useCompare } from '@/contexts/compare-context';
+import { CompareModal } from '@/components/compare/CompareModal';
 import { WelcomeCard } from './components/WelcomeCard';
 import { QuickActions } from './components/QuickActions';
 import { RecommendationsSection } from './components/RecommendationsSection';
@@ -15,6 +19,8 @@ import { ViewedCoursesSection } from './components/ViewedCoursesSection';
 import { PersonalAnalytics } from './components/PersonalAnalytics';
 
 export default function StudentDashboardPage() {
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const { compareList } = useCompare();
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [stats, setStats] = useState<Record<string, unknown> | null>(null);
   const [favorites, setFavorites] = useState<unknown[]>([]);
@@ -77,7 +83,22 @@ export default function StudentDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Öğrenci Paneli</h1>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <h1 className="text-2xl font-bold text-slate-900">Öğrenci Paneli</h1>
+        <Button
+          onClick={() => setIsCompareOpen(true)}
+          disabled={compareList.length < 2}
+          size="lg"
+        >
+          <GitCompare className="mr-2 h-5 w-5" />
+          Karşılaştır ({compareList.length})
+        </Button>
+      </div>
+
+      <CompareModal
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+      />
 
       <WelcomeCard
         profile={

@@ -6,9 +6,11 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle2, ChevronRight, BookOpen, Globe, MapPin, Coins } from 'lucide-react';
+import { CheckCircle2, ChevronRight, BookOpen, Globe, MapPin, Coins, GitCompare } from 'lucide-react';
 import { useState } from 'react';
 import { FavoriteButton } from '@/components/course/FavoriteButton';
+import { useCompareOptional } from '@/contexts/compare-context';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface University {
   id: string;
@@ -36,6 +38,7 @@ interface CourseCardProps {
 
 export function CourseCard({ course }: CourseCardProps) {
   const [hovered, setHovered] = useState(false);
+  const compareCtx = useCompareOptional();
 
   const c = course as Record<string, unknown>;
   const id = String(c.id || '');
@@ -70,6 +73,36 @@ export function CourseCard({ course }: CourseCardProps) {
         />
 
         <FavoriteButton courseId={id} variant="card" />
+
+        {compareCtx && (
+          <div
+            className="absolute top-3 right-12 z-10 flex items-center gap-1.5"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <Checkbox
+              id={`compare-${id}`}
+              checked={compareCtx.isInCompare(id)}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  compareCtx.addToCompare(id);
+                } else {
+                  compareCtx.removeFromCompare(id);
+                }
+              }}
+              disabled={!compareCtx.isInCompare(id) && !compareCtx.canAddMore}
+            />
+            <label
+              htmlFor={`compare-${id}`}
+              className="text-xs text-slate-500 cursor-pointer select-none flex items-center gap-1"
+            >
+              <GitCompare className="w-3 h-3" />
+              Karşılaştır
+            </label>
+          </div>
+        )}
 
         <div className="p-5 sm:p-6 flex flex-col flex-1">
           {/* Header: Üniversite bilgisi + Onaylı badge */}

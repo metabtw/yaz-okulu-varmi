@@ -163,6 +163,7 @@ model UserFavorite {
 
   @@unique([userId, courseId])
   @@index([userId])
+  @@index([courseId])
 }
 
 /// Öğrenci ders etkileşimleri (görüntüleme, başvuru vb.)

@@ -8,7 +8,7 @@ Turkiye'deki universitelerin yaz okulu ders bilgilerini standardize eden, univer
 
 ## Proje Ozellikleri
 
-- **Ogrenci Arayuzu:** 3D Turkiye haritasi (Three.js - planli), merkezi ders arama, akilli filtreler (sehir, AKTS, ucret, online/yuzyuze), **ogrenci dashboard** (favoriler, oneriler, arama gecmisi, analitikler), **favoriye ekleme** (search + detay sayfasi)
+- **Ogrenci Arayuzu:** 3D Turkiye haritasi (Three.js - planli), merkezi ders arama, akilli filtreler (sehir, AKTS, ucret, online/yuzyuze), **ogrenci dashboard** (favoriler, oneriler, arama gecmisi, analitikler), **favoriye ekleme** (search + detay sayfasi), **ders karsilastirma** (2-4 ders secerek fiyat/AKTS/online analizi, PDF export)
 - **Universite Paneli:** Ders CRUD, profil yonetimi, widget ayarlari (kendi sitelerine gomme)
 - **Admin Paneli:** Universite onaylama, ders yonetimi, kullanici onay mekanizmasi, platform istatistikleri
 - **Widget API:** Universitelerin kendi sitelerine Headless API ile ders tablosu gomebilmesi
@@ -130,6 +130,7 @@ updatedAt     updatedAt        startDate
 |-------|----------|----------|
 | GET | `/` | Health check |
 | GET | `/api/courses` | Ders arama (filtreler: q, city, isOnline, minEcts, maxEcts, minPrice, maxPrice). `q` parametresi Turkce dogal dil parser ile parse edilir |
+| GET | `/api/courses/compare?ids=id1,id2,id3` | Ders karsilastirma (2-4 ders, fiyat/AKTS/online analizi) |
 | GET | `/api/courses/:id` | Ders detayi |
 | GET | `/api/universities` | Onayli universite listesi |
 | GET | `/api/universities/:id` | Universite detayi |
@@ -366,6 +367,7 @@ npx prisma migrate dev --name degisiklik_adi
 - [x] **Hakkinda sayfasi** (/about)
 - [x] **Header:** Giris yapilmissa "Hesabim" butonu (rol bazli yonlendirme)
 - [x] **Search sayfasi header:** Ana header ile ayni auth mantigi
+- [x] **Ders Karsilastirma:** 2-4 ders secerek karsilastirma, analiz kartlari (en ucuz, ortalama AKTS, online/yuz yuze), PDF export, LocalStorage kaliciligi
 
 ### Planlanan Ozellikler
 
