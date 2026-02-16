@@ -26,7 +26,8 @@ export default function LoginPage() {
       // Token'ı localStorage ve cookie'ye kaydet
       localStorage.setItem('token', result.token);
       document.cookie = `token=${result.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      router.push('/dashboard');
+      const role = (result.user as { role?: string })?.role;
+      router.push(role === 'STUDENT' ? '/dashboard/student' : '/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Giriş başarısız');
     } finally {

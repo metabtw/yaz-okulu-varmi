@@ -126,6 +126,103 @@ export const userApi = {
   }>('/users/me'),
 };
 
+// ---- Student API ----
+
+export const studentApi = {
+  getProfile: () =>
+    fetchApi<{
+      id: string;
+      fullName: string | null;
+      email: string;
+      department?: string | null;
+      preferredCities?: string[];
+      university?: { id: string; name: string; city: string };
+    }>('/student/profile'),
+
+  getStats: () =>
+    fetchApi<{
+      totalSearches: number;
+      totalFavorites: number;
+      totalInteractions: number;
+      topSearchedCity: string | null;
+      avgEctsInterest: number;
+      lastSearchDate: string | null;
+    }>('/student/stats'),
+
+  getFavorites: () =>
+    fetchApi<
+      Array<{
+        id: string;
+        name: string;
+        code: string;
+        ects: number;
+        price: number | null;
+        currency: string;
+        isOnline: boolean;
+        university: { id: string; name: string; slug: string; city: string; logo?: string };
+      }>
+    >('/student/favorites'),
+
+  addFavorite: (courseId: string) =>
+    fetchApi<{ message: string }>('/student/favorites', {
+      method: 'POST',
+      body: JSON.stringify({ courseId }),
+    }),
+
+  removeFavorite: (courseId: string) =>
+    fetchApi<{ message: string }>(`/student/favorites/${courseId}`, {
+      method: 'DELETE',
+    }),
+
+  getSearchHistory: () =>
+    fetchApi<
+      Array<{
+        id: string;
+        searchQuery: string | null;
+        filters: Record<string, unknown>;
+        resultCount: number;
+        createdAt: string;
+      }>
+    >('/student/search-history'),
+
+  getInteractions: () =>
+    fetchApi<
+      Array<{
+        id: string;
+        courseId: string;
+        actionType: string;
+        createdAt: string;
+        course: {
+          id: string;
+          name: string;
+          ects: number;
+          price: number | null;
+          university: { name: string; city: string };
+        };
+      }>
+    >('/student/interactions'),
+
+  getRecommendations: () =>
+    fetchApi<
+      Array<{
+        id: string;
+        name: string;
+        code: string;
+        ects: number;
+        price: number | null;
+        currency: string;
+        isOnline: boolean;
+        university: { id: string; name: string; slug: string; city: string; logo?: string };
+      }>
+    >('/student/recommendations'),
+
+  recordInteraction: (courseId: string, actionType: 'VIEW' | 'FAVORITE' | 'APPLY') =>
+    fetchApi<{ message: string }>('/student/interactions', {
+      method: 'POST',
+      body: JSON.stringify({ courseId, actionType }),
+    }),
+};
+
 // ---- Widget API ----
 
 export const widgetApi = {

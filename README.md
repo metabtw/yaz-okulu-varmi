@@ -8,11 +8,12 @@ Turkiye'deki universitelerin yaz okulu ders bilgilerini standardize eden, univer
 
 ## Proje Ozellikleri
 
-- **Ogrenci Arayuzu:** 3D Turkiye haritasi (Three.js - planli), merkezi ders arama, akilli filtreler (sehir, AKTS, ucret, online/yuzyuze)
+- **Ogrenci Arayuzu:** 3D Turkiye haritasi (Three.js - planli), merkezi ders arama, akilli filtreler (sehir, AKTS, ucret, online/yuzyuze), **ogrenci dashboard** (favoriler, oneriler, arama gecmisi, analitikler), **favoriye ekleme** (search + detay sayfasi)
 - **Universite Paneli:** Ders CRUD, profil yonetimi, widget ayarlari (kendi sitelerine gomme)
 - **Admin Paneli:** Universite onaylama, ders yonetimi, kullanici onay mekanizmasi, platform istatistikleri
 - **Widget API:** Universitelerin kendi sitelerine Headless API ile ders tablosu gomebilmesi
 - **Akademik Loglama:** Her arama SearchLog tablosuna kaydedilir (makale icin istatistiksel analiz)
+- **Turkce Dogal Dil Arama Parser:** "Izmir'de online matematik", "6 AKTS'lik ucuz ders" gibi sorgulari otomatik filtreye cevirir (81 il, AKTS, fiyat, online/yuzyuze)
 - **RBAC Guvenlik:** Admin, University, Student rolleri + JWT authentication
 - **Universite Onay Mekanizmasi:** .edu.tr domain kontrolu, PENDING/ACTIVE/REJECTED status yonetimi
 
@@ -54,7 +55,8 @@ yaz-okulu-varmi/
 │   │       └── modules/
 │   │           ├── admin/            # Admin: onay, istatistik, uni/ders CRUD
 │   │           ├── auth/             # JWT auth, register, login
-│   │           ├── course/           # Ders CRUD + akilli arama
+│   │           ├── course/           # Ders CRUD + akilli arama + SearchParser
+│   │           ├── student/          # Ogrenci dashboard API (favoriler, oneriler)
 │   │           ├── university/       # Universite CRUD + widget config
 │   │           ├── user/             # Kullanici profil yonetimi
 │   │           ├── search-log/       # Akademik arama loglari
@@ -71,11 +73,13 @@ yaz-okulu-varmi/
 │       │   ├── dashboard/
 │       │   │   ├── page.tsx         # Genel bakis (istatistikler)
 │       │   │   ├── courses/         # Ders yonetimi
+│       │   │   ├── student/         # Ogrenci dashboard (favoriler, oneriler, arama gecmisi)
 │       │   │   ├── universities/    # Universite yonetimi (Admin)
 │       │   │   ├── pending/         # Onay bekleyenler (Admin)
 │       │   │   └── settings/        # Profil & widget ayarlari
 │       │   └── pending/             # "Hesabiniz onay bekliyor" sayfasi
 │       ├── components/layout/        # Paylasilmis UI bilesenleri
+│       ├── contexts/                 # FavoritesContext (favori senkronizasyonu)
 │       ├── lib/
 │       │   ├── api.ts               # Backend API client
 │       │   └── utils.ts             # Yardimci fonksiyonlar (cn)
@@ -95,19 +99,19 @@ yaz-okulu-varmi/
 ## Veritabani Modeli
 
 ```
-User          University       Course          SearchLog       ActivityLog
-─────         ──────────       ──────          ─────────       ───────────
-id            id               id              id              id
-email         name (unique)    code            searchQuery     userId
-passwordHash  slug (unique)    name            filters         action
-fullName      city             ects            resultCount     entity
-role          logo             price           ipHash          entityId
+User          University       Course          SearchLog       ActivityLog    UserFavorite    UserInteraction
+─────         ──────────       ──────          ─────────       ───────────   ────────────    ──────────────
+id            id               id              id              id            id              id
+email         name (unique)    code            searchQuery     userId        userId          userId
+passwordHash  slug (unique)    name            filters         action        courseId        courseId
+fullName      city             ects            resultCount     entity        createdAt       actionType
+role          logo             price           ipHash          entityId                     createdAt
 status        website          currency        userAgent       details
 universityId  contactEmail     isOnline        createdAt       ipAddress
-createdAt     isVerified       description                     createdAt
-updatedAt     widgetConfig     applicationUrl
-              createdAt        quota
-              updatedAt        startDate
+department    isVerified       viewCount       userId          createdAt
+preferredCities widgetConfig   applicationUrl
+createdAt     createdAt       quota
+updatedAt     updatedAt        startDate
                                endDate
                                universityId
                                createdAt
@@ -125,7 +129,7 @@ updatedAt     widgetConfig     applicationUrl
 | Metod | Endpoint | Aciklama |
 |-------|----------|----------|
 | GET | `/` | Health check |
-| GET | `/api/courses` | Ders arama (filtreler: q, city, isOnline, minEcts, maxEcts, minPrice, maxPrice) |
+| GET | `/api/courses` | Ders arama (filtreler: q, city, isOnline, minEcts, maxEcts, minPrice, maxPrice). `q` parametresi Turkce dogal dil parser ile parse edilir |
 | GET | `/api/courses/:id` | Ders detayi |
 | GET | `/api/universities` | Onayli universite listesi |
 | GET | `/api/universities/:id` | Universite detayi |
@@ -140,6 +144,19 @@ updatedAt     widgetConfig     applicationUrl
 | POST | `/api/university/courses` | Yeni ders ekle |
 | PATCH | `/api/university/courses/:id` | Ders guncelle |
 | DELETE | `/api/university/courses/:id` | Ders sil |
+
+### Student (JWT + STUDENT rolu)
+| Metod | Endpoint | Aciklama |
+|-------|----------|----------|
+| GET | `/api/student/profile` | Profil bilgisi |
+| GET | `/api/student/stats` | Istatistikler (arama, favori, etkilesim sayilari) |
+| GET | `/api/student/favorites` | Favori dersler |
+| POST | `/api/student/favorites` | Favoriye ekle (body: `{ courseId }`) |
+| DELETE | `/api/student/favorites/:courseId` | Favoriden cikar |
+| GET | `/api/student/search-history` | Arama gecmisi |
+| GET | `/api/student/interactions` | Incelenen dersler |
+| GET | `/api/student/recommendations` | Onerilen dersler |
+| POST | `/api/student/interactions` | Etkilesim kaydi (VIEW/FAVORITE/APPLY) |
 
 ### Admin (JWT + ADMIN rolu)
 | Metod | Endpoint | Aciklama |
@@ -343,6 +360,12 @@ npx prisma migrate dev --name degisiklik_adi
 - [x] Widget rehberi + gomme kodu + Headless API dokumantasyonu
 - [x] Modal bildirim sistemi (onay, hata, basari mesajlari)
 - [x] Turkce karakter destegi tum arayuzde
+- [x] **Ogrenci Dashboard:** Favoriler, oneriler, arama gecmisi, incelenen dersler, tercih analitikleri
+- [x] **Turkce Dogal Dil Arama Parser:** "Izmir'de online ders", "6 AKTS matematik" gibi sorgulari filtreye cevirir (81 il, AKTS, fiyat)
+- [x] **Favoriye Ekleme:** Search + detay sayfasinda favori butonu, FavoritesContext ile tum sayfalarda senkron
+- [x] **Hakkinda sayfasi** (/about)
+- [x] **Header:** Giris yapilmissa "Hesabim" butonu (rol bazli yonlendirme)
+- [x] **Search sayfasi header:** Ana header ile ayni auth mantigi
 
 ### Planlanan Ozellikler
 

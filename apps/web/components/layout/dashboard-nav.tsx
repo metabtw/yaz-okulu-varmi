@@ -27,6 +27,11 @@ const navItems: NavItem[] = [
   { href: '/dashboard/settings', label: 'Profil & Widget', icon: Settings },
 ];
 
+const studentNavItems: NavItem[] = [
+  { href: '/dashboard/student', label: 'Öğrenci Paneli', icon: LayoutDashboard },
+  { href: '/dashboard/student/search-history', label: 'Arama Geçmişim', icon: BookOpen },
+];
+
 export function DashboardNav() {
   const pathname = usePathname();
   const router = useRouter();
@@ -51,8 +56,9 @@ export function DashboardNav() {
     router.push('/login');
   };
 
-  const filteredItems = navItems.filter((item) => {
-    if (item.adminOnly && role !== 'ADMIN') return false;
+  const items = role === 'STUDENT' ? studentNavItems : navItems;
+  const filteredItems = items.filter((item) => {
+    if ('adminOnly' in item && item.adminOnly && role !== 'ADMIN') return false;
     return true;
   });
 

@@ -8,6 +8,7 @@
 import Link from 'next/link';
 import { CheckCircle2, ChevronRight, BookOpen, Globe, MapPin, Coins } from 'lucide-react';
 import { useState } from 'react';
+import { FavoriteButton } from '@/components/course/FavoriteButton';
 
 interface University {
   id: string;
@@ -67,6 +68,8 @@ export function CourseCard({ course }: CourseCardProps) {
             hovered ? 'opacity-100' : 'opacity-0'
           }`}
         />
+
+        <FavoriteButton courseId={id} variant="card" />
 
         <div className="p-5 sm:p-6 flex flex-col flex-1">
           {/* Header: Üniversite bilgisi + Onaylı badge */}
