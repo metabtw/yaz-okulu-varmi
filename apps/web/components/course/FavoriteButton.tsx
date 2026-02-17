@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { useFavoritesOptional } from '@/contexts/favorites-context';
 
@@ -16,7 +16,13 @@ interface FavoriteButtonProps {
 
 export function FavoriteButton({ courseId, variant = 'card', onAdded }: FavoriteButtonProps) {
   const [loading, setLoading] = useState(false);
+  // Hydration fix: ensures button only renders on client
+  const [mounted, setMounted] = useState(false);
   const ctx = useFavoritesOptional();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isFavorited = ctx?.isFavorited(courseId) ?? false;
   const isStudent = ctx?.isStudent ?? false;
@@ -41,7 +47,7 @@ export function FavoriteButton({ courseId, variant = 'card', onAdded }: Favorite
     }
   };
 
-  if (!isStudent) return null;
+  if (!mounted || !isStudent) return null;
 
   if (variant === 'card') {
     return (
@@ -53,9 +59,8 @@ export function FavoriteButton({ courseId, variant = 'card', onAdded }: Favorite
         aria-label={isFavorited ? 'Favorilerden kaldır' : 'Favorilere ekle'}
       >
         <Heart
-          className={`w-4 h-4 transition-colors ${
-            isFavorited ? 'fill-rose-500 text-rose-500' : 'text-slate-500'
-          }`}
+          className={`w-4 h-4 transition-colors ${isFavorited ? 'fill-rose-500 text-rose-500' : 'text-slate-500'
+            }`}
         />
       </button>
     );

@@ -8,10 +8,14 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MapPin, Menu, X } from 'lucide-react';
 
+import { usePathname } from 'next/navigation';
+
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === '/';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -26,14 +30,18 @@ export function Header() {
     }
   }, []);
 
+  // Header background logic:
+  // - If scrolled: Dark glass effect (existing behavior)
+  // - If NOT scrolled AND on Home: Transparent
+  // - If NOT scrolled AND NOT on Home: Solid Dark (to ensure readability on white/light pages)
+  const headerClass = scrolled
+    ? 'bg-slate-950/80 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/5'
+    : isHome
+      ? 'bg-transparent'
+      : 'bg-slate-950 border-b border-white/5';
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-slate-950/80 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/5'
-          : 'bg-transparent'
-      }`}
-    >
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerClass}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
@@ -104,31 +112,33 @@ export function Header() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="lg:hidden pb-6 border-t border-white/5 mt-2 pt-4 space-y-1">
-            <Link href="/universities-for" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
-              Üniversiteler İçin
-            </Link>
-            <Link href="/faq" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
-              SSS
-            </Link>
-            <Link href="/about" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
-              Hakkında
-            </Link>
-            <div className="h-px bg-white/5 my-2" />
-            {isLoggedIn ? (
-              <Link href="/dashboard" className="block mx-4 mt-2 px-4 py-3 text-sm font-medium text-white text-center bg-blue-500 hover:bg-blue-400 rounded-xl" onClick={() => setMobileOpen(false)}>
-                Hesabım
+          <div className="lg:hidden fixed inset-x-0 top-[64px] bottom-0 z-[100] bg-slate-950 px-4 pt-4 overflow-y-auto border-t border-white/5">
+            <div className="space-y-1 pb-8">
+              <Link href="/universities-for" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
+                Üniversiteler İçin
               </Link>
-            ) : (
-              <>
-                <Link href="/login" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
-                  Giriş Yap
+              <Link href="/faq" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
+                SSS
+              </Link>
+              <Link href="/about" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
+                Hakkında
+              </Link>
+              <div className="h-px bg-white/5 my-2" />
+              {isLoggedIn ? (
+                <Link href="/dashboard" className="block mx-4 mt-2 px-4 py-3 text-sm font-medium text-white text-center bg-blue-500 hover:bg-blue-400 rounded-xl" onClick={() => setMobileOpen(false)}>
+                  Hesabım
                 </Link>
-                <Link href="/register" className="block mx-4 mt-2 px-4 py-3 text-sm font-medium text-white text-center bg-blue-500 hover:bg-blue-400 rounded-xl" onClick={() => setMobileOpen(false)}>
-                  Kayıt Ol
-                </Link>
-              </>
-            )}
+              ) : (
+                <>
+                  <Link href="/login" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
+                    Giriş Yap
+                  </Link>
+                  <Link href="/register" className="block mx-4 mt-2 px-4 py-3 text-sm font-medium text-white text-center bg-blue-500 hover:bg-blue-400 rounded-xl" onClick={() => setMobileOpen(false)}>
+                    Kayıt Ol
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         )}
       </div>

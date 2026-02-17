@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ChevronLeft } from 'lucide-react';
 import { authApi } from '@/lib/api';
 
 export default function RegisterPage() {
@@ -75,6 +75,13 @@ export default function RegisterPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white px-4 py-12">
       <div className="w-full max-w-md">
+        <Link
+          href="/"
+          className="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 mb-6 transition-colors group"
+        >
+          <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-0.5 transition-transform" />
+          Ana Sayfaya Dön
+        </Link>
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-primary">
             Yaz Okulu Var mı?
