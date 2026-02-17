@@ -1,5 +1,6 @@
 
 import Link from 'next/link';
+import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { TrackCourseView } from '@/components/course/TrackCourseView';
 import { FavoriteButton } from '@/components/course/FavoriteButton';
@@ -50,10 +51,11 @@ export default async function CourseDetailPage({ params }: CourseDetailProps) {
 
   return (
     <div className="bg-[#f9f8fc] dark:bg-[#131022] text-slate-900 dark:text-slate-50 min-h-screen flex flex-col font-sans antialiased">
+      <Header />
       <TrackCourseView courseId={course.id} />
 
       {/* Main Layout */}
-      <main className="flex-1 py-8 px-4 md:px-8">
+      <main className="flex-1 pt-24 pb-8 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumbs */}
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">

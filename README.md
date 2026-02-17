@@ -368,6 +368,13 @@ npx prisma migrate dev --name degisiklik_adi
 - [x] **Header:** Giris yapilmissa "Hesabim" butonu (rol bazli yonlendirme)
 - [x] **Search sayfasi header:** Ana header ile ayni auth mantigi
 - [x] **Ders Karsilastirma:** 2-4 ders secerek karsilastirma, analiz kartlari (en ucuz, ortalama AKTS, online/yuz yuze), PDF export, LocalStorage kaliciligi
+- [x] **Gelişmiş Arama ve Filtreleme UI:** 
+    - Header entegrasyonu (Search sayfasında tutarlı navigasyon)
+    - Mobil uyumlu filtre menüsü ve yapışkan (sticky) arama barı
+    - Sayısal filtreler (Fiyat, AKTS) için **"Manuel Uygula"** modu (performans ve kullanım kolaylığı için)
+    - Metin arama kutusunda **Debounce (Gecikmeli)** arama optimizasyonu
+- [x] **Dinamik Header:** Sayfa türüne (Ana sayfa/Diğer) ve scroll durumuna göre otomatik renk/stil değişimi (Light/Dark mod uyumu)
+- [x] **Mobil Navigasyon:** Yenilenmiş, daha görünür ve erişilebilir mobil menü butonu ve yapısı
 
 ### Planlanan Ozellikler
 
