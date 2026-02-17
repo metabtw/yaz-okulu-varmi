@@ -11,156 +11,148 @@ import { Sparkles, ArrowRight, Search, GitCompare, ExternalLink } from 'lucide-r
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col font-display bg-[#f9f8fc] text-[#100d1c]">
       <Header />
 
-      {/* ======== HERO SECTION ======== */}
-      <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-[#0F172A]">
-        {/* Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 map-grid opacity-40" />
-          <div className="absolute top-1/3 left-1/4 w-[500px] h-[300px] rounded-full bg-blue-500/[0.06] blur-[100px]" />
-          <div className="absolute top-1/4 right-1/3 w-[400px] h-[250px] rounded-full bg-teal-500/[0.04] blur-[80px]" />
-          <div className="absolute bottom-1/3 left-1/2 w-[600px] h-[350px] rounded-full bg-blue-400/[0.04] blur-[120px] -translate-x-1/2" />
-
-          <div className="absolute top-[30%] left-[25%] w-2 h-2 rounded-full bg-blue-400 animate-pulse-dot opacity-60" />
-          <div className="absolute top-[35%] left-[40%] w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse-dot opacity-50" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-[28%] right-[30%] w-2 h-2 rounded-full bg-blue-300 animate-pulse-dot opacity-40" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-[40%] left-[55%] w-1.5 h-1.5 rounded-full bg-teal-300 animate-pulse-dot opacity-50" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute top-[32%] right-[20%] w-2 h-2 rounded-full bg-blue-400 animate-pulse-dot opacity-30" style={{ animationDelay: '1.5s' }} />
-
-          <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
-            <line x1="25%" y1="30%" x2="40%" y2="35%" stroke="currentColor" strokeWidth="1" className="text-blue-400" />
-            <line x1="40%" y1="35%" x2="55%" y2="40%" stroke="currentColor" strokeWidth="1" className="text-blue-400" />
-            <line x1="55%" y1="40%" x2="70%" y2="28%" stroke="currentColor" strokeWidth="1" className="text-teal-400" />
-          </svg>
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4 pt-28 pb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-slate-300 text-sm mb-8">
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span>TÜBİTAK Destekli Akademik Platform</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1]">
-            Türkiye&apos;nin Tüm{' '}
-            <span className="bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
-              Yaz Okulları
-            </span>
-            ,{' '}
-            <br className="hidden sm:block" />
-            Tek Haritada.
-          </h1>
-
-          <p className="text-lg sm:text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Üniversitelerin yaz okulu derslerini ara, karşılaştır ve en uygun dersi bul.
-            AKTS, ücret ve konum filtresiyle saniyeler içinde karar ver.
-          </p>
-
-          <SearchBar variant="hero" />
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-            <span className="text-sm text-slate-500">Popüler:</span>
-            {['Matematik', 'Fizik', 'İngilizce', 'Programlama', 'Lineer Cebir'].map((tag) => (
-              <Link
-                key={tag}
-                href={`/search?q=${encodeURIComponent(tag)}`}
-                className="px-3.5 py-1.5 rounded-lg text-sm text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-all"
-              >
-                {tag}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Smooth fade - sadece çok ince bir geçiş */}
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/99 to-transparent" />
-      </section>
-
-      {/* ======== STATS STRIP ======== */}
-      <StatsCounter />
-
-      {/* ======== NASIL ÇALIŞIR ======== */}
-      <section className="py-24 bg-slate-50/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-sm font-semibold text-blue-500 uppercase tracking-wider mb-3">Nasıl Çalışır?</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Üç Adımda Hayalindeki Derse Ulaş
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Search,
-                title: 'Ders Ara',
-                description: 'Ders adı, kodu veya üniversite adıyla arama yap. Şehir, AKTS, ücret ve eğitim formatı filtrelerini kullan.',
-                step: '01',
-                color: 'blue',
-              },
-              {
-                icon: GitCompare,
-                title: 'Karşılaştır',
-                description: 'Farklı üniversitelerin aynı dersi için ücret, AKTS ve eğitim formatını yan yana karşılaştır.',
-                step: '02',
-                color: 'teal',
-              },
-              {
-                icon: ExternalLink,
-                title: 'Başvur',
-                description: 'En uygun dersi bulduğunda doğrudan üniversitenin başvuru sayfasına tek tıkla yönlen.',
-                step: '03',
-                color: 'violet',
-              },
-            ].map((feature) => (
-              <div
-                key={feature.step}
-                className="group relative p-8 rounded-2xl text-black bg-white border border-slate-200 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300"
-              >
-                <div className="flex items-center gap-4 mb-5">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
-                    feature.color === 'blue' ? 'bg-blue-50 text-blue-500' :
-                    feature.color === 'teal' ? 'bg-teal-50 text-teal-500' :
-                    'bg-violet-50 text-violet-500'
-                  }`}>
-                    <feature.icon className="w-6 h-6" />
-                  </div>
-                  <span className="text-4xl font-bold text-black group-hover:text-blue-50 transition-colors">
-                    {feature.step}
-                  </span>
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">{feature.description}</p>
+      {/* Hero Section */}
+      <section className="w-full py-16 lg:py-24 px-6 relative overflow-hidden">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
+          {/* Left: Content & Search */}
+          <div className="flex flex-col gap-8 max-w-xl">
+            <div className="flex flex-col gap-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 w-fit">
+                <span className="size-2 rounded-full bg-primary animate-pulse"></span>
+                <span className="text-primary text-xs font-bold uppercase tracking-wider">2024 Başvuruları Başladı</span>
               </div>
-            ))}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-[#100d1c]">
+                Hayalindeki <span className="text-primary">Yaz Okulunu</span> Keşfet
+              </h1>
+              <p className="text-lg text-[#100d1c]/70 leading-relaxed max-w-lg">
+                Türkiye&apos;nin en iyi üniversitelerindeki programları karşılaştır, sana en uygun olanı hemen bul ve kariyerine yön ver.
+              </p>
+            </div>
+
+            {/* Search Bar - Custom Implementation matching design */}
+            <div className="bg-white p-2 rounded-xl border border-[#e9e7f4] shadow-xl shadow-primary/5">
+              <SearchBar variant="hero" />
+            </div>
+
+            <div className="flex items-center gap-4 text-sm text-[#100d1c]/60">
+              <span className="font-medium">Popüler:</span>
+              <div className="flex gap-2 flex-wrap">
+                <Link href="/search?q=Yazılım" className="hover:text-primary underline decoration-primary/30 underline-offset-4">Yazılım Mühendisliği</Link>
+                <span className="text-gray-300">•</span>
+                <Link href="/search?q=Hukuk" className="hover:text-primary underline decoration-primary/30 underline-offset-4">Hukuk</Link>
+                <span className="text-gray-300">•</span>
+                <Link href="/search?q=Psikoloji" className="hover:text-primary underline decoration-primary/30 underline-offset-4">Psikoloji</Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Image Collage */}
+          <div className="relative grid grid-cols-2 gap-4 h-full min-h-[400px]">
+            <div className="flex flex-col gap-4 mt-12">
+              <div className="w-full h-48 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500 relative group">
+                <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
+                {/* Placeholder images - using solid colors/gradients if next/image not avail, or use unoptimized images */}
+                <div className="w-full h-full bg-gradient-to-br from-blue-200 to-indigo-300 object-cover" />
+              </div>
+              <div className="w-full h-64 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[1deg] hover:rotate-0 transition-transform duration-500 relative group">
+                <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
+                <div className="w-full h-full bg-gradient-to-br from-purple-200 to-pink-300 object-cover" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="w-full h-64 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[2deg] hover:rotate-0 transition-transform duration-500 relative group">
+                <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
+                <div className="w-full h-full bg-gradient-to-br from-emerald-200 to-teal-300 object-cover" />
+              </div>
+              <div className="w-full h-48 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[-1deg] hover:rotate-0 transition-transform duration-500 relative group">
+                <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
+                <div className="w-full h-full bg-gradient-to-br from-orange-200 to-amber-300 object-cover" />
+              </div>
+            </div>
+          </div>
+
+          {/* Decorative Elements */}
+          <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl opacity-50"></div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="w-full py-16 px-6 bg-white">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-[#100d1c] mb-4">Neden Yaz Okulu Platformu?</h2>
+            <p className="text-[#100d1c]/60 max-w-2xl mx-auto">Binlerce öğrenci ve yüzlerce üniversiteyi tek bir çatı altında buluşturan özelliklerimiz.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="group p-8 rounded-2xl bg-white border border-[#e9e7f4] hover:border-primary hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+              <div className="size-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                <Search className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold text-[#100d1c] mb-3">Kolay Arama</h3>
+              <p className="text-[#100d1c]/60 leading-relaxed">Binlerce program arasından detaylı filtreleme yaparak sana en uygun olanı saniyeler içinde bul.</p>
+            </div>
+            {/* Feature 2 */}
+            <div className="group p-8 rounded-2xl bg-white border border-[#e9e7f4] hover:border-primary hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+              <div className="size-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                <GitCompare className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold text-[#100d1c] mb-3">Kurs Karşılaştırma</h3>
+              <p className="text-[#100d1c]/60 leading-relaxed">Farklı üniversitelerin programlarını fiyat, içerik ve tarihler açısından yan yana koy ve kıyasla.</p>
+            </div>
+            {/* Feature 3 */}
+            <div className="group p-8 rounded-2xl bg-white border border-[#e9e7f4] hover:border-primary hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+              <div className="size-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                {/* Bell icon replacement */}
+                <Sparkles className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold text-[#100d1c] mb-3">Üniversite Takibi</h3>
+              <p className="text-[#100d1c]/60 leading-relaxed">İlgilendiğin üniversiteleri favorilerine ekle, yeni açılan kontenjanlardan ve duyurulardan ilk sen haberdar ol.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ======== CTA SECTION ======== */}
-      <section className="py-24 bg-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight mb-6">
-            Üniversite Yetkilisi misiniz?
-          </h2>
-          <p className="text-lg text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Yaz okulu ders bilgilerinizi platformumuza ekleyin, binlerce öğrenciye ulaşın.
-            Widget entegrasyonu ile kendi sitenizde de ders tablosu yayınlayın.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 px-8 py-4 text-base font-medium text-white bg-blue-500 hover:bg-blue-400 rounded-2xl transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
-            >
+      {/* Stats Bar */}
+      <section className="w-full bg-primary py-16 px-6 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+        <div className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center relative z-10">
+          <div className="flex flex-col gap-2 p-4">
+            <span className="text-4xl md:text-5xl font-black text-white tracking-tight">50+</span>
+            <span className="text-white/80 font-medium text-sm uppercase tracking-wider">Anlaşmalı Üniversite</span>
+          </div>
+          <div className="flex flex-col gap-2 p-4 border-l border-white/10">
+            <span className="text-4xl md:text-5xl font-black text-white tracking-tight">2000+</span>
+            <span className="text-white/80 font-medium text-sm uppercase tracking-wider">Mutlu Öğrenci</span>
+          </div>
+          <div className="flex flex-col gap-2 p-4 border-l border-white/10">
+            <span className="text-4xl md:text-5xl font-black text-white tracking-tight">500+</span>
+            <span className="text-white/80 font-medium text-sm uppercase tracking-wider">Aktif Program</span>
+          </div>
+          <div className="flex flex-col gap-2 p-4 border-l border-white/10">
+            <span className="text-4xl md:text-5xl font-black text-white tracking-tight">12+</span>
+            <span className="text-white/80 font-medium text-sm uppercase tracking-wider">Şehir</span>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-[1000px] mx-auto bg-[#f9f8fc] rounded-3xl p-8 md:p-12 text-center border border-[#e9e7f4] flex flex-col items-center gap-6 shadow-sm">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#100d1c]">Hemen Başlamaya Hazır mısın?</h2>
+          <p className="text-[#100d1c]/70 max-w-lg text-lg">Geleceğini şekillendirecek yaz okulu programını bulmak için daha fazla bekleme.</p>
+          <div className="flex flex-col sm:flex-row gap-4 mt-2">
+            <Link href="/register" className="flex items-center justify-center h-12 px-8 rounded-lg bg-primary text-white font-bold text-base hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
               Ücretsiz Kayıt Ol
-              <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link
-              href="/universities-for"
-              className="inline-flex items-center gap-2 px-8 py-4 text-base font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-2xl transition-all"
-            >
+            <Link href="/about" className="flex items-center justify-center h-12 px-8 rounded-lg bg-white border border-[#d3cee8] text-[#100d1c] font-bold text-base hover:bg-[#f6f5f8] transition-colors">
               Daha Fazla Bilgi
             </Link>
           </div>

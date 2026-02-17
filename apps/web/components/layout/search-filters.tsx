@@ -5,23 +5,45 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { SearchBar } from '@/components/layout/search-bar';
 import { ChevronDown, ChevronUp, Filter, X } from 'lucide-react';
 
 export function SearchFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(true); // Desktop collapsible state
+  const [filtersOpen, setFiltersOpen] = useState(true);
+
+  // Local state for debounced inputs
+  const [priceRange, setPriceRange] = useState({
+    min: searchParams.get('minPrice') || '',
+    max: searchParams.get('maxPrice') || ''
+  });
+  const [ectsRange, setEctsRange] = useState({
+    min: searchParams.get('minEcts') || '',
+    max: searchParams.get('maxEcts') || ''
+  });
+
+  // Sync local state when URL params change (e.g. clear filters)
+  useEffect(() => {
+    setPriceRange({
+      min: searchParams.get('minPrice') || '',
+      max: searchParams.get('maxPrice') || ''
+    });
+    setEctsRange({
+      min: searchParams.get('minEcts') || '',
+      max: searchParams.get('maxEcts') || ''
+    });
+  }, [searchParams]);
 
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (updates: Record<string, string>) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set(name, value);
-      } else {
-        params.delete(name);
-      }
+      Object.entries(updates).forEach(([name, value]) => {
+        if (value) params.set(name, value);
+        else params.delete(name);
+      });
       params.delete('page');
       return params.toString();
     },
@@ -29,13 +51,30 @@ export function SearchFilters() {
   );
 
   const updateFilter = (name: string, value: string) => {
-    router.push(`/search?${createQueryString(name, value)}`);
+    router.push(`/search?${createQueryString({ [name]: value })}`);
   };
+
+  const updateFilters = (updates: Record<string, string>) => {
+    router.push(`/search?${createQueryString(updates)}`);
+  };
+
+  // No debounce effects for Price/ECTS anymore. Manual apply.
 
   const cities = ['İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa', 'Eskişehir'];
 
+  const applyRangeFilters = () => {
+    updateFilters({
+      minEcts: ectsRange.min,
+      maxEcts: ectsRange.max,
+      minPrice: priceRange.min,
+      maxPrice: priceRange.max
+    });
+  };
+
   // Filter content - reused for both mobile sheet and desktop sidebar
-  const FilterContent = () => (
+  // Using a variable instead of a component to avoid re-mounting input fields on state change,
+  // which causes focus loss.
+  const filterContent = (
     <div className="space-y-6">
       {/* City Filter */}
       <div>
@@ -79,7 +118,7 @@ export function SearchFilters() {
         </div>
       </div>
 
-      {/* AKTS Range */}
+      {/* AKTS Range - Manual Apply */}
       <div>
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
           AKTS Aralığı
@@ -88,42 +127,51 @@ export function SearchFilters() {
           <input
             type="number"
             placeholder="Min"
-            value={searchParams.get('minEcts') || ''}
-            onChange={(e) => updateFilter('minEcts', e.target.value)}
+            value={ectsRange.min}
+            onChange={(e) => setEctsRange(prev => ({ ...prev, min: e.target.value }))}
             className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
           <span className="text-slate-300 text-sm">-</span>
           <input
             type="number"
             placeholder="Max"
-            value={searchParams.get('maxEcts') || ''}
-            onChange={(e) => updateFilter('maxEcts', e.target.value)}
+            value={ectsRange.max}
+            onChange={(e) => setEctsRange(prev => ({ ...prev, max: e.target.value }))}
             className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
         </div>
       </div>
 
-      {/* Price Range */}
+      {/* Price Range - Manual Apply */}
       <div>
         <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 block">
           Ücret Aralığı (TL)
         </label>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            placeholder="Min"
-            value={searchParams.get('minPrice') || ''}
-            onChange={(e) => updateFilter('minPrice', e.target.value)}
-            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-          />
-          <span className="text-slate-300 text-sm">-</span>
-          <input
-            type="number"
-            placeholder="Max"
-            value={searchParams.get('maxPrice') || ''}
-            onChange={(e) => updateFilter('maxPrice', e.target.value)}
-            className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-          />
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              placeholder="Min"
+              value={priceRange.min}
+              onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+              className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            />
+            <span className="text-slate-300 text-sm">-</span>
+            <input
+              type="number"
+              placeholder="Max"
+              value={priceRange.max}
+              onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+              className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            />
+          </div>
+
+          <button
+            onClick={applyRangeFilters}
+            className="w-full py-2 bg-blue-500 text-white font-medium text-sm rounded-xl shadow-lg shadow-blue-500/20 hover:bg-blue-600 active:scale-95 transition-all"
+          >
+            Filtreleri Uygula
+          </button>
         </div>
       </div>
 
@@ -143,10 +191,11 @@ export function SearchFilters() {
   return (
     <>
       {/* Mobile Filter Trigger */}
-      <div className="lg:hidden mb-4">
+      <div className="lg:hidden sticky top-20 z-40 mb-4 bg-background-light/80 backdrop-blur-md py-2 px-1 -mx-1 flex flex-col gap-2">
+        <SearchBar variant="compact" defaultValue={searchParams.get('q') || ''} />
         <button
           onClick={() => setMobileOpen(true)}
-          className="flex items-center justify-center gap-2 w-full py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm"
+          className="flex items-center justify-center gap-2 w-full py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 shadow-sm hover:border-primary/50 transition-all"
         >
           <Filter className="w-4 h-4" />
           Filtrele
@@ -155,7 +204,7 @@ export function SearchFilters() {
 
       {/* Mobile Sheet (Overlay + Sidebar) */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden flow-root">
+        <div className="fixed inset-0 z-[100] lg:hidden">
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setMobileOpen(false)}
@@ -171,7 +220,7 @@ export function SearchFilters() {
               </button>
             </div>
             <div className="p-5 overflow-y-auto flex-1">
-              <FilterContent />
+              {filterContent}
             </div>
           </div>
         </div>
@@ -190,7 +239,7 @@ export function SearchFilters() {
         </div>
 
         <div className={`transition-all duration-300 ease-in-out overflow-hidden ${filtersOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-          <FilterContent />
+          {filterContent}
         </div>
       </div>
     </>

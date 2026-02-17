@@ -6,7 +6,7 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 
@@ -18,14 +18,31 @@ interface SearchBarProps {
 export function SearchBar({ variant = 'hero', defaultValue = '' }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState(defaultValue);
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Sync with external changes (only when not focused to avoid overwriting user typing)
+  // This prevents multiple SearchBar instances from overwriting each other or creating loops
+  useEffect(() => {
+    if (!isFocused) {
+      setQuery(defaultValue);
+    }
+  }, [defaultValue, isFocused]);
+
+  // Live search debouncing
+  useEffect(() => {
+    // Only search if query changed from what it was initialized with/synced to
+    if (query === defaultValue) return;
+
+    const timer = setTimeout(() => {
+      router.push(query.trim() ? `/search?q=${encodeURIComponent(query.trim())}` : '/search');
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [query, router, defaultValue]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-    } else {
-      router.push('/search');
-    }
+    router.push(query.trim() ? `/search?q=${encodeURIComponent(query.trim())}` : '/search');
   };
 
   if (variant === 'compact') {
@@ -37,6 +54,8 @@ export function SearchBar({ variant = 'hero', defaultValue = '' }: SearchBarProp
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder="Ders veya üniversite ara..."
             className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
@@ -54,8 +73,10 @@ export function SearchBar({ variant = 'hero', defaultValue = '' }: SearchBarProp
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder="Hangi dersi veya üniversiteyi arıyorsun? (Örn: Lineer Cebir)"
-            className="w-full h-14 pl-13 pr-36 rounded-xl bg-white/[0.07] text-white placeholder:text-slate-400 text-base focus:outline-none focus:bg-white/[0.1] transition-colors"
+            className="w-full h-14 pl-13 pr-36 rounded-xl bg-slate-50 text-slate-900 placeholder:text-slate-400 text-base focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500/20 transition-all border border-transparent focus:border-blue-500/50"
             style={{ paddingLeft: '3rem' }}
           />
           <button

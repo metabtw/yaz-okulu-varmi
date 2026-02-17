@@ -16,9 +16,11 @@ const config: Config = {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
+          DEFAULT: '#330df2', // Updated to new design primary
           foreground: 'hsl(var(--primary-foreground))',
         },
+        'background-light': '#f9f8fc',
+        'background-dark': '#131022',
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
@@ -46,7 +48,8 @@ const config: Config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Lexend"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Lexend"', 'sans-serif'],
       },
     },
   },

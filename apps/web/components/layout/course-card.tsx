@@ -60,8 +60,8 @@ export function CourseCard({ course }: CourseCardProps) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={`relative bg-white rounded-2xl border transition-all duration-300 overflow-hidden card-lift h-full flex flex-col ${hovered
-            ? 'border-blue-200 shadow-lg shadow-blue-500/5'
-            : 'border-slate-200 shadow-sm'
+          ? 'border-blue-200 shadow-lg shadow-blue-500/5'
+          : 'border-slate-200 shadow-sm'
           }`}
       >
         {/* Sol accent border */}
@@ -109,8 +109,8 @@ export function CourseCard({ course }: CourseCardProps) {
             </span>
 
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${isOnline
-                ? 'bg-violet-50 text-violet-600'
-                : 'bg-amber-50 text-amber-600'
+              ? 'bg-violet-50 text-violet-600'
+              : 'bg-amber-50 text-amber-600'
               }`}>
               <Globe className="w-3 h-3" />
               {isOnline ? 'Online' : 'Yüzyüze'}

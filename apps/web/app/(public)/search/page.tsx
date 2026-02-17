@@ -3,130 +3,234 @@
  * Server Component: URL parametrelerinden filtreler okunur.
  */
 import Link from 'next/link';
-import { SearchBar } from '@/components/layout/search-bar';
+import { Header } from '@/components/layout/header';
 import { SearchFilters } from '@/components/layout/search-filters';
-import { CourseCard } from '@/components/layout/course-card';
-import { SearchHeader } from '@/components/layout/search-header';
-import { Footer } from '@/components/layout/footer';
-import { MapPin, SlidersHorizontal } from 'lucide-react';
+import { SearchBar } from '@/components/layout/search-bar';
+import {
+  ChevronRight, LayoutGrid, List, SlidersHorizontal, MapPin,
+  Calendar, Clock, User, Star, Heart, ArrowRight, ArrowUpDown, ChevronDown
+} from 'lucide-react';
+import { FavoriteButton } from '@/components/course/FavoriteButton';
+
+export const dynamic = 'force-dynamic';
 
 interface SearchPageProps {
   searchParams: {
     q?: string;
     city?: string;
-    isOnline?: string;
-    minEcts?: string;
-    maxEcts?: string;
+    university?: string;
     minPrice?: string;
     maxPrice?: string;
+    startDate?: string;
     page?: string;
+    programType?: string;
   };
 }
 
-/** Backend'den ders arama sonuçlarını çeker */
-async function searchCourses(params: Record<string, string>) {
+async function getCourses(params: Record<string, string>) {
   try {
-    const query = new URLSearchParams(params).toString();
     const apiUrl = process.env.API_URL || 'http://localhost:4000';
-    const res = await fetch(`${apiUrl}/api/courses?${query}`, {
-      cache: 'no-store',
-    });
-
-    if (!res.ok) return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
+    const queryString = new URLSearchParams(params).toString();
+    console.log("Fetching courses from:", `${apiUrl}/api/courses?${queryString}`); // Debug log
+    const res = await fetch(`${apiUrl}/api/courses?${queryString}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch courses');
     return res.json();
-  } catch {
-    return { data: [], meta: { total: 0, page: 1, limit: 20, totalPages: 0 } };
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    return { data: [], meta: { page: 1, limit: 10, total: 0 } };
   }
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const params: Record<string, string> = {};
-  if (searchParams.q) params.q = searchParams.q;
-  if (searchParams.city) params.city = searchParams.city;
-  if (searchParams.isOnline) params.isOnline = searchParams.isOnline;
-  if (searchParams.minEcts) params.minEcts = searchParams.minEcts;
-  if (searchParams.maxEcts) params.maxEcts = searchParams.maxEcts;
-  if (searchParams.minPrice) params.minPrice = searchParams.minPrice;
-  if (searchParams.maxPrice) params.maxPrice = searchParams.maxPrice;
-  if (searchParams.page) params.page = searchParams.page;
-
-  const result = await searchCourses(params);
+  const page = Number(searchParams.page) || 1;
+  const result = await getCourses(searchParams);
+  const courses = result.data || [];
+  const total = result.meta?.total || 0;
+  const totalPages = Math.ceil(total / (result.meta?.limit || 10));
 
   return (
-    <main className="min-h-screen bg-slate-50/50">
-      <SearchHeader defaultSearchValue={searchParams.q || ''} />
+    <div className="min-h-screen bg-[#f9f8fc] dark:bg-[#131022]">
+      <Header />
+      <div className="max-w-[1440px] mx-auto w-full px-4 md:px-8 pt-24 pb-6 flex flex-col md:flex-row gap-6">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar: Filtreler */}
-          <aside className="lg:w-72 shrink-0">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 sticky top-24">
-              <div className="flex items-center gap-2 mb-5">
-                <SlidersHorizontal className="w-4 h-4 text-slate-500" />
-                <h3 className="text-sm font-semibold text-slate-900">Filtreler</h3>
+        {/* Sidebar Filters */}
+        <aside className="w-full md:w-[280px] shrink-0">
+          <div className="sticky top-24 self-start isolate z-30 space-y-6">
+
+
+            <SearchFilters />
+
+            {/* Promo Card (from HTML) */}
+            <div className="bg-primary/5 p-5 rounded-xl border border-primary/10 hidden md:block">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-3xl">🏷️</span>
+                <h4 className="text-primary font-bold">Erken Kayıt Fırsatı</h4>
               </div>
-              <SearchFilters />
-            </div>
-          </aside>
-
-          {/* Main: Sonuçlar */}
-          <div className="flex-1 min-w-0">
-            {/* Sonuç bilgisi */}
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-sm text-slate-500">
-                {searchParams.q && (
-                  <span>
-                    &quot;<span className="font-medium text-slate-700">{searchParams.q}</span>&quot; için{' '}
-                  </span>
-                )}
-                <span className="font-semibold text-slate-900">{result.meta?.total || 0}</span> sonuç bulundu
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                Seçili yaz okullarında %20'ye varan erken kayıt indirimini kaçırmayın.
               </p>
+              <button className="w-full py-2 bg-white text-primary font-semibold text-sm rounded-lg border border-primary/20 hover:bg-primary/5 transition-colors">
+                Fırsatları İncele
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col gap-6">
+          {/* Breadcrumbs & Header Controls */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <Link href="/" className="hover:text-primary transition-colors">Ana Sayfa</Link>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-[#100d1c] dark:text-white font-medium">Kurslar</span>
             </div>
 
-            {/* Ders Kartları Grid - geniş kartlar (2 sütun) */}
-            {result.data && result.data.length > 0 ? (
-              <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-5">
-                {result.data.map((course: Record<string, unknown>) => (
-                  <CourseCard key={course.id as string} course={course} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-24 bg-white rounded-2xl border border-slate-200">
-                <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-8 h-8 text-slate-300" />
-                </div>
-                <p className="text-lg font-semibold text-slate-900 mb-2">Sonuç bulunamadı</p>
-                <p className="text-sm text-slate-500 max-w-sm mx-auto">
-                  Farklı anahtar kelimeler veya daha geniş filtreler deneyin.
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-[#100d1c] dark:text-white tracking-tight mb-1">
+                  Yaz Okulu Programları
+                </h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <span className="text-primary font-bold">{total}</span> Kurs Bulundu
                 </p>
               </div>
-            )}
 
-            {/* Sayfalama */}
-            {result.meta && result.meta.totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-10">
-                {Array.from({ length: result.meta.totalPages }, (_, i) => i + 1).map(
-                  (pageNum) => (
-                    <Link
-                      key={pageNum}
-                      href={`/search?${new URLSearchParams({ ...params, page: String(pageNum) }).toString()}`}
-                      className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-sm font-medium transition-all ${
-                        pageNum === (result.meta?.page || 1)
-                          ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:border-blue-200 hover:text-blue-500'
-                      }`}
-                    >
-                      {pageNum}
-                    </Link>
-                  ),
-                )}
+              {/* Header Search Bar - Desktop */}
+              <div className="hidden md:block flex-1 max-w-lg mx-6">
+                <SearchBar variant="compact" defaultValue={searchParams.q} />
               </div>
+
+              <div className="flex items-center gap-3">
+                {/* Sort Dropdown */}
+                <div className="relative group">
+                  <button className="flex items-center gap-2 h-10 px-4 bg-white dark:bg-[#1a1625] border border-[#e9e7f4] dark:border-[#2d2a3b] rounded-lg text-sm font-medium text-[#100d1c] dark:text-white hover:border-primary/50 transition-colors">
+                    <ArrowUpDown className="w-4 h-4" />
+                    Sırala: Önerilen
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* View Toggles */}
+                <div className="flex bg-white dark:bg-[#1a1625] border border-[#e9e7f4] dark:border-[#2d2a3b] rounded-lg p-1 h-10">
+                  <button aria-label="Grid Görünümü" className="w-9 flex items-center justify-center rounded text-gray-400 hover:text-primary hover:bg-gray-50 dark:hover:bg-[#2d2a3b] transition-all">
+                    <LayoutGrid className="w-5 h-5" />
+                  </button>
+                  <button aria-label="Liste Görünümü" className="w-9 flex items-center justify-center rounded bg-primary text-white shadow-sm transition-all">
+                    <List className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Course List */}
+          <div className="flex flex-col gap-4">
+            {courses.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-2xl border border-slate-100">
+                <p className="text-slate-500">Aradığınız kriterlere uygun ders bulunamadı.</p>
+              </div>
+            ) : (
+              courses.map((course: any) => (
+                <div key={course.id} className="group bg-white dark:bg-[#1a1625] rounded-xl p-4 border border-[#e9e7f4] dark:border-[#2d2a3b] shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row gap-5">
+                  {/* Image */}
+                  <div className="w-full md:w-[240px] shrink-0 h-48 md:h-auto relative rounded-lg overflow-hidden bg-slate-200">
+                    <div className="absolute top-2 left-2 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-primary flex items-center gap-1 z-10">
+                      <Star className="w-3 h-3 fill-primary" /> 4.8
+                    </div>
+                    {/* Placeholder color if no image */}
+                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-slate-300">
+                      <span className="text-4xl">🎓</span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 flex flex-col justify-between py-1">
+                    <div>
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
+                          {course.code || 'Genel'}
+                        </span>
+                        <div className="scale-75 origin-top-right">
+                          <FavoriteButton courseId={course.id} />
+                        </div>
+                      </div>
+                      <Link href={`/courses/${course.id}`}>
+                        <h3 className="text-xl font-bold text-[#100d1c] dark:text-white mb-1 group-hover:text-primary transition-colors cursor-pointer">
+                          {course.name}
+                        </h3>
+                      </Link>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-3">
+                        {course.university?.name || 'Üniversite'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-4">
+                        {course.description || 'Bu ders için henüz açıklama girilmemiş. Detaylı bilgi için ders sayfasını ziyaret edebilirsiniz.'}
+                      </p>
+
+                      <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        {course.startDate && (
+                          <div className="flex items-center gap-1 bg-gray-50 dark:bg-[#2d2a3b] px-2 py-1 rounded">
+                            <Calendar className="w-4 h-4" />
+                            {new Date(course.startDate).toLocaleDateString('tr-TR')}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1 bg-gray-50 dark:bg-[#2d2a3b] px-2 py-1 rounded">
+                          <Clock className="w-4 h-4" />
+                          {course.ects} AKTS
+                        </div>
+                        <div className="flex items-center gap-1 bg-gray-50 dark:bg-[#2d2a3b] px-2 py-1 rounded">
+                          <User className="w-4 h-4 text-green-600" />
+                          {course.isOnline ? 'Online' : 'Yüzyüze'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Sidebar */}
+                  <div className="w-full md:w-[200px] shrink-0 flex flex-col justify-end md:justify-center items-start md:items-end gap-2 md:border-l md:border-gray-100 dark:md:border-[#2d2a3b] md:pl-5 pt-4 md:pt-0 mt-2 md:mt-0 border-t md:border-t-0 border-gray-100 dark:border-[#2d2a3b]">
+                    <div className="text-right w-full md:w-auto flex flex-row md:flex-col justify-between items-center md:items-end">
+                      <div className="flex flex-col items-start md:items-end">
+                        {course.price && (
+                          <span className="text-2xl font-bold text-primary">
+                            {Number(course.price).toLocaleString('tr-TR')} {course.currency || 'TL'}
+                          </span>
+                        )}
+                        {!course.price && <span className="text-2xl font-bold text-primary">Ücretsiz</span>}
+                        <span className="text-[10px] text-gray-400">/ Dönem</span>
+                      </div>
+                      <Link href={`/courses/${course.id}`} className="hidden md:flex mt-4 w-full h-10 items-center justify-center rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm shadow-primary/30 transition-all">
+                        Detayları Gör
+                      </Link>
+                    </div>
+                    <Link href={`/courses/${course.id}`} className="md:hidden w-full h-10 flex items-center justify-center rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold shadow-sm shadow-primary/30 transition-all">
+                      Detayları Gör
+                    </Link>
+                  </div>
+                </div>
+              ))
             )}
           </div>
-        </div>
-      </div>
 
-      <Footer />
-    </main>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 py-8 mt-4">
+              {/* Pagination logic here, simplified for now */}
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <Link
+                  key={i}
+                  href={`/search?${new URLSearchParams({ ...searchParams, page: String(i + 1) }).toString()}`}
+                  className={`flex items-center justify-center size-10 rounded-lg font-medium transition-colors ${page === i + 1
+                    ? 'bg-primary text-white shadow-sm shadow-primary/30'
+                    : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                >
+                  {i + 1}
+                </Link>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
   );
 }

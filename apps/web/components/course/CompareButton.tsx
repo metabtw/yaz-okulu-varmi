@@ -9,9 +9,10 @@ import { GitCompare } from 'lucide-react';
 
 interface CompareButtonProps {
   courseId: string;
+  className?: string; // className prop'u eklendi
 }
 
-export function CompareButton({ courseId }: CompareButtonProps) {
+export function CompareButton({ courseId, className }: CompareButtonProps) {
   const compareCtx = useCompareOptional();
   if (!compareCtx) return null;
 
@@ -19,7 +20,7 @@ export function CompareButton({ courseId }: CompareButtonProps) {
   const canAdd = compareCtx.canAddMore;
 
   return (
-    <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+    <div className={`flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100 ${className || ''}`}>
       <Checkbox
         id={`compare-detail-${courseId}`}
         checked={inCompare}
