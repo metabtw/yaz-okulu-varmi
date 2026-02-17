@@ -59,17 +59,15 @@ export function CourseCard({ course }: CourseCardProps) {
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`relative bg-white rounded-2xl border transition-all duration-300 overflow-hidden card-lift h-full flex flex-col ${
-          hovered
+        className={`relative bg-white rounded-2xl border transition-all duration-300 overflow-hidden card-lift h-full flex flex-col ${hovered
             ? 'border-blue-200 shadow-lg shadow-blue-500/5'
             : 'border-slate-200 shadow-sm'
-        }`}
+          }`}
       >
         {/* Sol accent border */}
         <div
-          className={`absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-2xl transition-opacity duration-300 ${
-            hovered ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-2xl transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'
+            }`}
         />
 
         <FavoriteButton courseId={id} variant="card" />
@@ -110,11 +108,10 @@ export function CourseCard({ course }: CourseCardProps) {
               {ects} AKTS
             </span>
 
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${
-              isOnline
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${isOnline
                 ? 'bg-violet-50 text-violet-600'
                 : 'bg-amber-50 text-amber-600'
-            }`}>
+              }`}>
               <Globe className="w-3 h-3" />
               {isOnline ? 'Online' : 'Yüzyüze'}
             </span>
@@ -135,9 +132,8 @@ export function CourseCard({ course }: CourseCardProps) {
           </div>
 
           {/* CTA: Detayları Gör + Karşılaştır yan yana */}
-          <div className={`flex items-center gap-3 mt-4 pt-4 border-t border-slate-100 transition-all duration-300 ${
-            hovered ? 'opacity-100' : 'opacity-50'
-          }`}>
+          <div className={`flex items-center gap-3 mt-4 pt-4 border-t border-slate-100 transition-all duration-300 ${hovered ? 'opacity-100' : 'opacity-50'
+            }`}>
             <span className="flex items-center text-sm font-medium text-blue-500 flex-1 min-w-0">
               Detayları Gör
               <ChevronRight className="w-4 h-4 ml-1 shrink-0" />
@@ -148,6 +144,14 @@ export function CourseCard({ course }: CourseCardProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+
+                  if (compareCtx.isInCompare(id)) {
+                    compareCtx.removeFromCompare(id);
+                  } else {
+                    if (compareCtx.canAddMore) {
+                      compareCtx.addToCompare(id);
+                    }
+                  }
                 }}
               >
                 <Checkbox
