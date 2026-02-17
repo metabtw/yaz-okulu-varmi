@@ -167,64 +167,64 @@ function ComparisonTable({
     highlight?: (c: Course) => boolean;
     highlightLabel?: string;
   }> = [
-    {
-      label: 'Üniversite',
-      render: (c) => (
-        <div className="flex items-center gap-2">
-          {c.university.logo && (
-            <img
-              src={c.university.logo}
-              alt={c.university.name}
-              className="w-8 h-8 rounded object-cover"
-            />
-          )}
-          <span className="font-medium">{c.university.name}</span>
-        </div>
-      ),
-    },
-    {
-      label: 'Ders Kodu',
-      render: (c) => <Badge variant="secondary">{c.code}</Badge>,
-    },
-    {
-      label: 'Şehir',
-      render: (c) => c.university.city,
-    },
-    {
-      label: 'AKTS',
-      render: (c) => c.ects,
-      highlight: (c) => c.id === analysis.mostEcts.id,
-      highlightLabel: 'En Yüksek',
-    },
-    {
-      label: 'Ücret',
-      render: (c) => `${c.price ?? 0} ${c.currency}`,
-      highlight: (c) => c.id === analysis.cheapest.id,
-      highlightLabel: 'En Ucuz',
-    },
-    {
-      label: 'Ders Türü',
-      render: (c) => (
-        <Badge variant={c.isOnline ? 'default' : 'outline'}>
-          {c.isOnline ? '🌐 Online' : '🏫 Yüz Yüze'}
-        </Badge>
-      ),
-    },
-    {
-      label: 'Kontenjan',
-      render: (c) => c.quota ?? 'Belirtilmemiş',
-    },
-    {
-      label: 'Başlangıç',
-      render: (c) =>
-        c.startDate ? new Date(c.startDate).toLocaleDateString('tr-TR') : '-',
-    },
-    {
-      label: 'Bitiş',
-      render: (c) =>
-        c.endDate ? new Date(c.endDate).toLocaleDateString('tr-TR') : '-',
-    },
-  ];
+      {
+        label: 'Üniversite',
+        render: (c) => (
+          <div className="flex items-center gap-2">
+            {c.university.logo && (
+              <img
+                src={c.university.logo}
+                alt={c.university.name}
+                className="w-8 h-8 rounded object-cover"
+              />
+            )}
+            <span className="font-medium">{c.university.name}</span>
+          </div>
+        ),
+      },
+      {
+        label: 'Ders Kodu',
+        render: (c) => <Badge variant="secondary">{c.code}</Badge>,
+      },
+      {
+        label: 'Şehir',
+        render: (c) => c.university.city,
+      },
+      {
+        label: 'AKTS',
+        render: (c) => c.ects,
+        highlight: (c) => c.id === analysis.mostEcts.id,
+        highlightLabel: 'En Yüksek',
+      },
+      {
+        label: 'Ücret',
+        render: (c) => `${c.price ?? 0} ${c.currency}`,
+        highlight: (c) => c.id === analysis.cheapest.id,
+        highlightLabel: 'En Ucuz',
+      },
+      {
+        label: 'Ders Türü',
+        render: (c) => (
+          <Badge variant={c.isOnline ? 'default' : 'outline'}>
+            {c.isOnline ? '🌐 Online' : '🏫 Yüz Yüze'}
+          </Badge>
+        ),
+      },
+      {
+        label: 'Kontenjan',
+        render: (c) => c.quota ?? 'Belirtilmemiş',
+      },
+      {
+        label: 'Başlangıç',
+        render: (c) =>
+          c.startDate ? new Date(c.startDate).toLocaleDateString('tr-TR') : '-',
+      },
+      {
+        label: 'Bitiş',
+        render: (c) =>
+          c.endDate ? new Date(c.endDate).toLocaleDateString('tr-TR') : '-',
+      },
+    ];
 
   return (
     <div className="overflow-x-auto">
@@ -269,9 +269,8 @@ function ComparisonTable({
                 return (
                   <td
                     key={course.id}
-                    className={`p-4 ${
-                      isHighlighted ? 'bg-emerald-50' : ''
-                    }`}
+                    className={`p-4 ${isHighlighted ? 'bg-emerald-50' : ''
+                      }`}
                   >
                     <div className="flex items-center gap-2 flex-wrap">
                       {row.render(course)}
@@ -327,7 +326,7 @@ export function CompareModal({ isOpen, onClose }: CompareModalProps) {
     setError(null);
     try {
       const json = await courseApi.compare(compareList);
-      setData(json as CompareData);
+      setData(json as unknown as CompareData);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Karşılaştırma verisi alınamadı';
       setError(msg);

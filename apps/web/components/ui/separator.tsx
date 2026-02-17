@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 const Separator = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement> & { orientation?: 'horizontal' | 'vertical' }
 >(({ className, orientation = 'horizontal', ...props }, ref) => (
   <div
     ref={ref}
