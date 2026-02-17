@@ -155,7 +155,7 @@ export function SearchFilters() {
 
       {/* Mobile Sheet (Overlay + Sidebar) */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flow-root">
+        <div className="fixed inset-0 z-[100] lg:hidden flow-root">
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setMobileOpen(false)}

@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
+import { MapPin, Menu, X } from 'lucide-react';
 import { SearchBar } from './search-bar';
 
 interface SearchHeaderProps {
@@ -17,6 +17,7 @@ export function SearchHeader({ defaultSearchValue = '' }: SearchHeaderProps) {
   const [authState, setAuthState] = useState<{ loggedIn: boolean; role?: string }>({
     loggedIn: false,
   });
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -50,38 +51,40 @@ export function SearchHeader({ defaultSearchValue = '' }: SearchHeaderProps) {
           <div className="flex-1 max-w-xl">
             <SearchBar variant="compact" defaultValue={defaultSearchValue} />
           </div>
+
+          {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">
             <Link
               href="/universities-for"
-              className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              className="px-4 py-2 text-sm text-slate-300 hover:text-slate-600 transition-colors rounded-lg hover:bg-slate-50"
             >
               Üniversiteler İçin
             </Link>
             <Link
               href="/faq"
-              className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              className="px-4 py-2 text-sm text-slate-300 hover:text-slate-600 transition-colors rounded-lg hover:bg-slate-50"
             >
-              Sıkça Sorulan Sorular
+              SSS
             </Link>
             <Link
               href="/about"
-              className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              className="px-4 py-2 text-sm text-slate-300 hover:text-slate-600 transition-colors rounded-lg hover:bg-slate-50"
             >
               Hakkında
             </Link>
-            <div className="w-px h-6 bg-white/10 mx-2" />
+            <div className="w-px h-6 bg-slate-200 mx-2" />
             {authState.loggedIn ? (
               <Link
                 href="/dashboard"
                 className="ml-1 px-5 py-2.5 text-sm font-medium text-white bg-blue-500 hover:bg-blue-400 rounded-xl transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
               >
-                {authState.role === 'ADMIN' ? 'Admin Paneli' : authState.role === 'STUDENT' ? 'Öğrenci Paneli' : 'Hesabım'}   
+                {authState.role === 'ADMIN' ? 'Admin Paneli' : authState.role === 'STUDENT' ? 'Öğrenci Paneli' : 'Hesabım'}
               </Link>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                  className="px-4 py-2 text-sm text-slate-500 hover:text-slate-900 transition-colors rounded-lg hover:bg-slate-50"
                 >
                   Giriş Yap
                 </Link>
@@ -94,7 +97,47 @@ export function SearchHeader({ defaultSearchValue = '' }: SearchHeaderProps) {
               </>
             )}
           </nav>
+
+          {/* Mobile Toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="lg:hidden p-2 text-slate-500 hover:text-slate-900"
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileOpen && (
+          <div className="lg:hidden fixed inset-x-0 top-[64px] bottom-0 z-[100] bg-white px-4 pt-4 overflow-y-auto border-t border-slate-200">
+            <div className="space-y-1 pb-8">
+              <Link href="/universities-for" className="block px-4 py-3 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+                Üniversiteler İçin
+              </Link>
+              <Link href="/faq" className="block px-4 py-3 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+                SSS
+              </Link>
+              <Link href="/about" className="block px-4 py-3 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+                Hakkında
+              </Link>
+              <div className="h-px bg-slate-100 my-2" />
+              {authState.loggedIn ? (
+                <Link href="/dashboard" className="block mx-4 mt-2 px-4 py-3 text-sm font-medium text-white text-center bg-blue-500 hover:bg-blue-400 rounded-xl" onClick={() => setMobileOpen(false)}>
+                  Hesabım
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login" className="block px-4 py-3 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg" onClick={() => setMobileOpen(false)}>
+                    Giriş Yap
+                  </Link>
+                  <Link href="/register" className="block mx-4 mt-2 px-4 py-3 text-sm font-medium text-white text-center bg-blue-500 hover:bg-blue-400 rounded-xl" onClick={() => setMobileOpen(false)}>
+                    Kayıt Ol
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -11,7 +11,6 @@ import { OverviewCards } from './components/OverviewCards';
 import { PopularCoursesTable } from './components/PopularCoursesTable';
 import { TimeSeriesCharts } from './components/TimeSeriesCharts';
 import { CourseHealthCard } from './components/CourseHealthCard';
-import { WidgetSection } from './components/WidgetSection';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -73,7 +72,6 @@ export default function UniversityDashboardPage() {
       <Tabs defaultValue="analytics" className="space-y-6">
         <TabsList>
           <TabsTrigger value="analytics">Analitikler</TabsTrigger>
-          <TabsTrigger value="widget">Widget Ayarları</TabsTrigger>
         </TabsList>
 
         <TabsContent value="analytics" className="space-y-6">
@@ -87,12 +85,6 @@ export default function UniversityDashboardPage() {
 
           <Suspense fallback={<Skeleton className="h-96 rounded-2xl" />}>
             <TimeSeriesCharts />
-          </Suspense>
-        </TabsContent>
-
-        <TabsContent value="widget">
-          <Suspense fallback={<Skeleton className="h-96 rounded-2xl" />}>
-            <WidgetSection />
           </Suspense>
         </TabsContent>
       </Tabs>

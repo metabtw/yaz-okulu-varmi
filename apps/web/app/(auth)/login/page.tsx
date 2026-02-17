@@ -29,7 +29,14 @@ export default function LoginPage() {
       localStorage.setItem('token', result.token);
       document.cookie = `token=${result.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       const role = (result.user as { role?: string })?.role;
-      router.push(role === 'STUDENT' ? '/dashboard/student' : '/dashboard');
+
+      // Admin ve University -> /dashboard
+      // Student -> /dashboard/student
+      if (role === 'STUDENT') {
+        router.push('/dashboard/student');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Giriş başarısız');
     } finally {

@@ -104,7 +104,7 @@ export function Header() {
           {/* Mobile Toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-slate-300 hover:text-white"
+            className="lg:hidden relative z-[101] p-2 text-slate-300 hover:text-white"
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -112,7 +112,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="lg:hidden fixed inset-x-0 top-[64px] bottom-0 z-[100] bg-slate-950 px-4 pt-4 overflow-y-auto border-t border-white/5">
+          <div className="lg:hidden fixed inset-0 z-[100] bg-slate-950 px-4 pt-20 overflow-y-auto border-t border-white/5">
             <div className="space-y-1 pb-8">
               <Link href="/universities-for" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg" onClick={() => setMobileOpen(false)}>
                 Üniversiteler İçin

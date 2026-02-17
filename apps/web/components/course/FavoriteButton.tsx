@@ -24,6 +24,15 @@ export function FavoriteButton({ courseId, variant = 'card', onAdded }: Favorite
     setMounted(true);
   }, []);
 
+  // Sadece STUDENT rolü veya giriş yapmamış kullanıcı (belki?) görebilsin diye bu kontrolü gevşetiyoruz
+  // Eğer hiç kimse göremiyorsa isStudent false dönüyor olabilir.
+  // Şimdilik butonu gösterelim, tıklayınca navigate etsin.
+  // Kullanıcı "favori butonu yok" diyorsa muhtemelen Guest olarak geziyor.
+  // Bu butonu Guest'ler de görmeli mi? Genelde evet, tıklayınca login ister.
+  // Ancak `favorites-context` buna hazır mı?
+  // Şimdilik sadece render engelini kaldırıyorum.
+  if (!mounted) return null;
+
   const isFavorited = ctx?.isFavorited(courseId) ?? false;
   const isStudent = ctx?.isStudent ?? false;
 
