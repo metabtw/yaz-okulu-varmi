@@ -28,17 +28,7 @@ export function SearchBar({ variant = 'hero', defaultValue = '' }: SearchBarProp
     }
   }, [defaultValue, isFocused]);
 
-  // Live search debouncing
-  useEffect(() => {
-    // Only search if query changed from what it was initialized with/synced to
-    if (query === defaultValue) return;
-
-    const timer = setTimeout(() => {
-      router.push(query.trim() ? `/search?q=${encodeURIComponent(query.trim())}` : '/search');
-    }, 500); // 500ms delay
-
-    return () => clearTimeout(timer);
-  }, [query, router, defaultValue]);
+  // NOT: Live search kaldırıldı - sadece Enter veya Ara butonuna basınca arama yapılacak
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

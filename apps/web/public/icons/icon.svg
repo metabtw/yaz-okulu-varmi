@@ -1,0 +1,24 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#3B82F6"/>
+  
+  <!-- Book icon -->
+  <path d="M128 112C128 98.7452 138.745 88 152 88H248V424H152C138.745 424 128 413.255 128 400V112Z" fill="white" fill-opacity="0.9"/>
+  <path d="M384 112C384 98.7452 373.255 88 360 88H264V424H360C373.255 424 384 413.255 384 400V112Z" fill="white" fill-opacity="0.7"/>
+  
+  <!-- Sun icon (yaz okulu - summer school) -->
+  <circle cx="256" cy="200" r="40" fill="#FBBF24"/>
+  <g stroke="#FBBF24" stroke-width="8" stroke-linecap="round">
+    <line x1="256" y1="140" x2="256" y2="120"/>
+    <line x1="256" y1="280" x2="256" y2="260"/>
+    <line x1="196" y1="200" x2="176" y2="200"/>
+    <line x1="336" y1="200" x2="316" y2="200"/>
+    <line x1="214" y1="158" x2="200" y2="144"/>
+    <line x1="298" y1="242" x2="312" y2="256"/>
+    <line x1="214" y1="242" x2="200" y2="256"/>
+    <line x1="298" y1="158" x2="312" y2="144"/>
+  </g>
+  
+  <!-- Text "YO" -->
+  <text x="256" y="380" font-family="system-ui, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">YO</text>
+</svg>

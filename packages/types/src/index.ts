@@ -109,7 +109,7 @@ export interface SearchFilters {
   maxPrice?: string;
   page?: string;
   limit?: string;
-  sortBy?: 'name' | 'price' | 'ects' | 'createdAt';
+  sortBy?: 'name' | 'price' | 'ects' | 'createdAt' | 'startDate';
   sortOrder?: 'asc' | 'desc';
 }
 

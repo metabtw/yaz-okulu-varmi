@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Test Sayfasi</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 { color: #1e40af; }
+    .test-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 16px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .dark-bg {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Yaz Okulu Widget Test Sayfasi</h1>
+  
+  <div class="test-section">
+    <h2>Light Theme Widget</h2>
+    <p>Asagidaki widget, universitelerin web sitelerine gomebilecegi ders tablosunu gosterir.</p>
+    
+    <!-- Widget buraya yuklenecek -->
+    <script
+      src="http://localhost:3000/widget/embed.js"
+      data-widget-id="test-university"
+      data-api-url="http://localhost:4000"
+      data-theme="light"
+      async
+    ></script>
+  </div>
+
+  <div class="test-section">
+    <h2>Dark Theme Widget</h2>
+    <div class="dark-bg">
+      <script
+        src="http://localhost:3000/widget/embed.js"
+        data-widget-id="test-university"
+        data-api-url="http://localhost:4000"
+        data-theme="dark"
+        async
+      ></script>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>Kullanim Kodu</h2>
+    <pre>&lt;script
+  src="https://yazokuluvarmi.com/widget/embed.js"
+  data-widget-id="UNIVERSITE-ID-VEYA-SLUG"
+  data-api-url="https://api.yazokuluvarmi.com"
+  data-theme="auto"
+  async
+&gt;&lt;/script&gt;</pre>
+  </div>
+
+  <div class="test-section">
+    <h2>Parametreler</h2>
+    <table style="width:100%; border-collapse: collapse;">
+      <tr style="background:#f0f0f0;">
+        <th style="padding:8px; text-align:left; border:1px solid #ddd;">Parametre</th>
+        <th style="padding:8px; text-align:left; border:1px solid #ddd;">Zorunlu</th>
+        <th style="padding:8px; text-align:left; border:1px solid #ddd;">Aciklama</th>
+      </tr>
+      <tr>
+        <td style="padding:8px; border:1px solid #ddd;"><code>data-widget-id</code></td>
+        <td style="padding:8px; border:1px solid #ddd;">Evet</td>
+        <td style="padding:8px; border:1px solid #ddd;">Universite ID veya slug</td>
+      </tr>
+      <tr>
+        <td style="padding:8px; border:1px solid #ddd;"><code>data-api-url</code></td>
+        <td style="padding:8px; border:1px solid #ddd;">Evet</td>
+        <td style="padding:8px; border:1px solid #ddd;">API base URL</td>
+      </tr>
+      <tr>
+        <td style="padding:8px; border:1px solid #ddd;"><code>data-theme</code></td>
+        <td style="padding:8px; border:1px solid #ddd;">Hayir</td>
+        <td style="padding:8px; border:1px solid #ddd;">light | dark | auto (varsayilan: auto)</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

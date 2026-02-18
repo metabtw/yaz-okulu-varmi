@@ -134,9 +134,22 @@ export default function SettingsPage() {
     }
   };
 
+  // Widget URL'leri - production ve development için
+  const widgetScriptUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://yazokuluvarmi.com/widget/embed.js'
+    : `${window.location.origin}/widget/embed.js`;
+  const apiUrl = process.env.NODE_ENV === 'production'
+    ? 'https://api.yazokuluvarmi.com'
+    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/api\/?$/, '');
+
   const embedCode = `<!-- Yaz Okulu Var mı? Widget -->
-<div id="yov-widget" data-university-id="${universityId}" data-color="${primaryColor}" data-theme="${theme}"></div>
-<script src="https://yazokuluvarmi.com/widget.js" async></script>`;
+<script
+  src="${widgetScriptUrl}"
+  data-widget-id="${universityId}"
+  data-api-url="${apiUrl}"
+  data-theme="${theme}"
+  async
+></script>`;
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

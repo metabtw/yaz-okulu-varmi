@@ -1,9 +1,24 @@
 /**
  * Widget Service - Dış site entegrasyonu için ders verisi sağlar.
  * Üniversitenin kendi sitesine gömülen tablo/widget için JSON endpoint.
+ * 
+ * Widget Script: apps/web/public/widget/embed.js (Static)
  */
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+
+/** Widget API Response Interface */
+export interface WidgetData {
+  widgetId: string;
+  universityName: string;
+  theme: 'light' | 'dark' | 'auto';
+  columns: string[];
+  rows: Record<string, unknown>[];
+  meta: {
+    total: number;
+    lastUpdated: string; // ISO 8601
+  };
+}
 
 @Injectable()
 export class WidgetService {
@@ -14,8 +29,9 @@ export class WidgetService {
   /**
    * Üniversitenin widget verisini döner.
    * Param: university ID veya slug (örn: istanbul-teknik-universitesi).
+   * Format: WidgetData interface'ine uygun JSON
    */
-  async getWidgetData(param: string) {
+  async getWidgetData(param: string): Promise<WidgetData> {
     const isSlug = param.includes('-');
     const university = await this.prisma.university.findFirst({
       where: isSlug ? { slug: param } : { id: param },
@@ -55,53 +71,32 @@ export class WidgetService {
 
     this.logger.log(`Widget verisi istendi: ${university.name}`);
 
-    return {
-      university: {
-        name: university.name,
-        logo: university.logo,
-        website: university.website,
-      },
-      courses: university.courses,
-      generatedAt: new Date().toISOString(),
-    };
-  }
+    // Widget config'den theme al veya varsayılan kullan
+    const config = university.widgetConfig as { theme?: string } | null;
+    const theme = (config?.theme as 'light' | 'dark' | 'auto') || 'auto';
 
-  /** Widget embed script - dış sitelere gömülebilir */
-  async getEmbedScript(): Promise<string> {
-    const apiUrl = process.env.API_URL || 'http://localhost:4000';
-    return `
-(function() {
-  'use strict';
-  const WIDGET_API = '${apiUrl}/api/widget';
-  const containers = document.querySelectorAll('[data-yaz-okulu-widget]');
-  containers.forEach(async (container) => {
-    const slug = container.getAttribute('data-university');
-    const limit = container.getAttribute('data-limit') || '5';
-    const sortBy = container.getAttribute('data-sort') || 'popular';
-    if (!slug) { console.error('data-university gerekli'); return; }
-    try {
-      const res = await fetch(WIDGET_API + '/' + encodeURIComponent(slug) + '?limit=' + limit + '&sortBy=' + sortBy);
-      const data = await res.json();
-      const isDark = container.getAttribute('data-theme') === 'dark';
-      const bg = isDark ? '#1a1a1a' : '#fff';
-      const text = isDark ? '#fff' : '#000';
-      const border = isDark ? '#333' : '#e5e7eb';
-      let html = '<div style="font-family:system-ui;background:' + bg + ';color:' + text + ';border:1px solid ' + border + ';border-radius:8px;padding:20px;">';
-      html += '<h3 style="margin:0 0 16px;font-size:18px;">' + data.university.name + ' - Yaz Okulu</h3>';
-      (data.courses || []).forEach(function(c) {
-        html += '<div style="border:1px solid ' + border + ';border-radius:6px;padding:12px;margin-bottom:12px;">';
-        html += '<h4 style="margin:0 0 8px;font-size:14px;">' + c.name + '</h4>';
-        html += '<p style="margin:0;font-size:12px;color:' + (isDark ? '#9ca3af' : '#6b7280') + ';">' + c.code + ' | ' + c.ects + ' AKTS | ' + (c.price != null ? c.price + ' ' + c.currency : 'Ücretsiz') + '</p>';
-        if (c.applicationUrl) html += '<a href="' + c.applicationUrl + '" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 12px;background:#3b82f6;color:#fff;border-radius:4px;text-decoration:none;font-size:12px;">Başvur</a>';
-        html += '</div>';
-      });
-      html += '<p style="margin-top:16px;text-align:center;font-size:12px;"><a href="https://yazokuluvarmi.com" target="_blank" style="color:' + (isDark ? '#9ca3af' : '#6b7280') + ';">Tüm dersler →</a></p></div>';
-      container.innerHTML = html;
-    } catch (e) {
-      container.innerHTML = '<p style="color:red;">Yaz okulu dersleri yüklenemedi.</p>';
-    }
-  });
-})();
-    `.trim();
+    // Standart widget response formatı
+    return {
+      widgetId: university.id,
+      universityName: university.name,
+      theme,
+      columns: ['code', 'name', 'ects', 'price', 'isOnline', 'applicationUrl'],
+      rows: university.courses.map((course) => ({
+        id: course.id,
+        code: course.code,
+        name: course.name,
+        ects: course.ects,
+        price: course.price ? Number(course.price) : null,
+        currency: course.currency,
+        isOnline: course.isOnline,
+        applicationUrl: course.applicationUrl,
+        startDate: course.startDate?.toISOString() || null,
+        endDate: course.endDate?.toISOString() || null,
+      })),
+      meta: {
+        total: university.courses.length,
+        lastUpdated: new Date().toISOString(),
+      },
+    };
   }
 }

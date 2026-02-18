@@ -49,27 +49,46 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right: Image Collage */}
+          {/* Right: Image Collage - Üniversite Görselleri */}
           <div className="relative grid grid-cols-2 gap-4 h-full min-h-[400px]">
             <div className="flex flex-col gap-4 mt-12">
               <div className="w-full h-48 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[-2deg] hover:rotate-0 transition-transform duration-500 relative group">
                 <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
-                {/* Placeholder images - using solid colors/gradients if next/image not avail, or use unoptimized images */}
-                <div className="w-full h-full bg-gradient-to-br from-blue-200 to-indigo-300 object-cover" />
+                {/* Öğrenciler çalışıyor */}
+                <img 
+                  src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=300&fit=crop&q=80" 
+                  alt="Öğrenciler birlikte çalışıyor"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="w-full h-64 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[1deg] hover:rotate-0 transition-transform duration-500 relative group">
                 <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
-                <div className="w-full h-full bg-gradient-to-br from-purple-200 to-pink-300 object-cover" />
+                {/* Öğrenci kitap okuyor */}
+                <img 
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&q=80" 
+                  alt="Öğrenci kitap okuyor"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
             <div className="flex flex-col gap-4">
               <div className="w-full h-64 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[2deg] hover:rotate-0 transition-transform duration-500 relative group">
                 <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
-                <div className="w-full h-full bg-gradient-to-br from-emerald-200 to-teal-300 object-cover" />
+                {/* Üniversite kampüsü */}
+                <img 
+                  src="https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=400&fit=crop&q=80" 
+                  alt="Üniversite kampüsü"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="w-full h-48 rounded-2xl bg-gray-200 overflow-hidden shadow-lg transform rotate-[-1deg] hover:rotate-0 transition-transform duration-500 relative group">
                 <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
-                <div className="w-full h-full bg-gradient-to-br from-orange-200 to-amber-300 object-cover" />
+                {/* Mezuniyet */}
+                <img 
+                  src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop&q=80" 
+                  alt="Mezuniyet töreni"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>

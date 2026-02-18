@@ -76,7 +76,7 @@ export const SearchCoursesSchema = z.object({
   maxPrice: z.string().optional(),                     // Maximum ücret
   page: z.string().optional().default('1'),            // Sayfa numarası
   limit: z.string().optional().default('20'),          // Sayfa başına sonuç
-  sortBy: z.enum(['name', 'price', 'ects', 'createdAt']).optional().default('name'),
+  sortBy: z.enum(['name', 'price', 'ects', 'createdAt', 'startDate']).optional().default('name'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
 });
 

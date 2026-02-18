@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { SearchFilters } from '@/components/layout/search-filters';
-import { SearchBar } from '@/components/layout/search-bar';
+import { SearchHeaderControls } from '@/components/layout/search-header-controls';
 import {
   ChevronRight, LayoutGrid, List, SlidersHorizontal, MapPin,
   Calendar, Clock, User, Star, Heart, ArrowRight, ArrowUpDown, ChevronDown
@@ -24,6 +24,9 @@ interface SearchPageProps {
     startDate?: string;
     page?: string;
     programType?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    view?: 'grid' | 'list';
   };
 }
 
@@ -96,41 +99,85 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 </p>
               </div>
 
-              {/* Header Search Bar - Desktop */}
-              <div className="hidden md:block flex-1 max-w-lg mx-6">
-                <SearchBar variant="compact" defaultValue={searchParams.q} />
-              </div>
-
-              <div className="flex items-center gap-3">
-                {/* Sort Dropdown */}
-                <div className="relative group">
-                  <button className="flex items-center gap-2 h-10 px-4 bg-white dark:bg-[#1a1625] border border-[#e9e7f4] dark:border-[#2d2a3b] rounded-lg text-sm font-medium text-[#100d1c] dark:text-white hover:border-primary/50 transition-colors">
-                    <ArrowUpDown className="w-4 h-4" />
-                    Sırala: Önerilen
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* View Toggles */}
-                <div className="flex bg-white dark:bg-[#1a1625] border border-[#e9e7f4] dark:border-[#2d2a3b] rounded-lg p-1 h-10">
-                  <button aria-label="Grid Görünümü" className="w-9 flex items-center justify-center rounded text-gray-400 hover:text-primary hover:bg-gray-50 dark:hover:bg-[#2d2a3b] transition-all">
-                    <LayoutGrid className="w-5 h-5" />
-                  </button>
-                  <button aria-label="Liste Görünümü" className="w-9 flex items-center justify-center rounded bg-primary text-white shadow-sm transition-all">
-                    <List className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
+              {/* Header Controls - Search, Sort, View */}
+              <SearchHeaderControls 
+                defaultQuery={searchParams.q} 
+                defaultSort="recommended"
+                defaultView={searchParams.view || 'list'}
+              />
             </div>
           </div>
 
-          {/* Course List */}
-          <div className="flex flex-col gap-4">
+          {/* Course List/Grid */}
+          <div className={searchParams.view === 'grid' 
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4' 
+            : 'flex flex-col gap-4'
+          }>
             {courses.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-slate-100">
+              <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 col-span-full">
                 <p className="text-slate-500">Aradığınız kriterlere uygun ders bulunamadı.</p>
               </div>
+            ) : searchParams.view === 'grid' ? (
+              // Grid View
+              courses.map((course: any) => (
+                <div key={course.id} className="group bg-white dark:bg-[#1a1625] rounded-xl border border-[#e9e7f4] dark:border-[#2d2a3b] shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col">
+                  {/* Image */}
+                  <div className="w-full h-40 relative bg-slate-200">
+                    <div className="absolute top-2 left-2 bg-white/90 dark:bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-primary flex items-center gap-1 z-10">
+                      <Star className="w-3 h-3 fill-primary" /> 4.8
+                    </div>
+                    <div className="absolute top-2 right-2 z-10">
+                      <FavoriteButton courseId={course.id} />
+                    </div>
+                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-slate-300">
+                      <span className="text-4xl">🎓</span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4 flex-1 flex flex-col">
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded w-fit mb-2">
+                      {course.code || 'Genel'}
+                    </span>
+                    <Link href={`/courses/${course.id}`}>
+                      <h3 className="text-lg font-bold text-[#100d1c] dark:text-white mb-1 group-hover:text-primary transition-colors cursor-pointer line-clamp-2">
+                        {course.name}
+                      </h3>
+                    </Link>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-2">
+                      {course.university?.name || 'Üniversite'}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                      <div className="flex items-center gap-1 bg-gray-50 dark:bg-[#2d2a3b] px-2 py-1 rounded">
+                        <Clock className="w-3 h-3" />
+                        {course.ects} AKTS
+                      </div>
+                      <div className="flex items-center gap-1 bg-gray-50 dark:bg-[#2d2a3b] px-2 py-1 rounded">
+                        <User className="w-3 h-3 text-green-600" />
+                        {course.isOnline ? 'Online' : 'Yüzyüze'}
+                      </div>
+                    </div>
+
+                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-[#2d2a3b] flex items-center justify-between">
+                      <div>
+                        {course.price ? (
+                          <span className="text-lg font-bold text-primary">
+                            {Number(course.price).toLocaleString('tr-TR')} {course.currency || 'TL'}
+                          </span>
+                        ) : (
+                          <span className="text-lg font-bold text-primary">Ücretsiz</span>
+                        )}
+                      </div>
+                      <Link href={`/courses/${course.id}`} className="h-8 px-3 flex items-center justify-center rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all">
+                        Detaylar
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
             ) : (
+              // List View
               courses.map((course: any) => (
                 <div key={course.id} className="group bg-white dark:bg-[#1a1625] rounded-xl p-4 border border-[#e9e7f4] dark:border-[#2d2a3b] shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row gap-5">
                   {/* Image */}

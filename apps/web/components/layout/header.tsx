@@ -52,7 +52,7 @@ export function Header() {
 
   const logoTextClass = isLightHeader
     ? 'text-slate-900'
-    : 'text-white';
+    : 'text-blue-900';
 
   return (
     <>
