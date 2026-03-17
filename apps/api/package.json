@@ -4,7 +4,7 @@
   "private": true,
   "description": "Yaz Okulu Var mı? - NestJS Backend API",
   "scripts": {
-    "build": "nest build && prisma generate",
+    "build": "prisma generate && nest build",
     "postinstall": "prisma generate",
     "dev": "nest start --watch",
     "start": "nest start",
