@@ -36,7 +36,14 @@ export class UniversityService {
     }
 
     const university = await this.prisma.university.create({
-      data: { ...dto, slug },
+      data: {
+        name: dto.name,
+        city: dto.city,
+        logo: dto.logo || null,
+        website: dto.website || null,
+        contactEmail: dto.contactEmail || null,
+        slug,
+      },
     });
 
     this.logger.log(`Yeni üniversite oluşturuldu: ${university.name}`);

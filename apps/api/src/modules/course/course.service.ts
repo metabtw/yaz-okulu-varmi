@@ -435,10 +435,18 @@ export class CourseService {
   async create(dto: CreateCourseDto, universityId: string) {
     const course = await this.prisma.course.create({
       data: {
-        ...dto,
+        code: dto.code,
+        name: dto.name,
+        ects: dto.ects,
+        currency: dto.currency,
+        isOnline: dto.isOnline,
+        description: dto.description === '' ? null : dto.description,
+        applicationUrl: dto.applicationUrl === '' ? null : dto.applicationUrl,
+        quota: dto.quota ?? null,
         price: dto.price ?? null,
         startDate: dto.startDate ? new Date(dto.startDate) : null,
         endDate: dto.endDate ? new Date(dto.endDate) : null,
+        applicationDeadline: dto.applicationDeadline ? new Date(dto.applicationDeadline) : null,
         universityId,
       },
       include: {
@@ -474,6 +482,7 @@ export class CourseService {
         price: dto.price !== undefined ? (dto.price ?? null) : undefined,
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         endDate: dto.endDate ? new Date(dto.endDate) : undefined,
+        applicationDeadline: dto.applicationDeadline ? new Date(dto.applicationDeadline) : undefined,
       },
     });
   }
