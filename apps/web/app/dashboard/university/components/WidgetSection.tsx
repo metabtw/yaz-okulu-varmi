@@ -20,14 +20,13 @@ import { userApi } from '@/lib/api';
 
 
 // NEXT_PUBLIC_API_URL zaten /api ile bittiği için temiz base URL'e ihtiyaç var
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api').replace(/\/api$/, '');
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api').replace(/\/api\/?$/, '');
 
 // Widget script URL - production ve development için
 const getWidgetScriptUrl = () => {
   if (typeof window === 'undefined') return '/widget/embed.js';
-  return process.env.NODE_ENV === 'production'
-    ? 'https://yazokuluvarmi.com/widget/embed.js'
-    : `${window.location.origin}/widget/embed.js`;
+  // Production'da www'li domain kullan (Vercel deploy)
+  return `${window.location.origin}/widget/embed.js`;
 };
 
 

@@ -13,6 +13,9 @@ import {
   Code, Copy, Check, Info, ExternalLink, BookOpen, CheckCircle
 } from 'lucide-react';
 
+// API base URL - env'den al, hardcoded değil
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api').replace(/\/api\/?$/, '');
+
 interface UniversityData {
   id: string;
   name: string;
@@ -134,19 +137,16 @@ export default function SettingsPage() {
     }
   };
 
-  // Widget URL'leri - production ve development için
-  const widgetScriptUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://yazokuluvarmi.com/widget/embed.js'
-    : `${window.location.origin}/widget/embed.js`;
-  const apiUrl = process.env.NODE_ENV === 'production'
-    ? 'https://api.yazokuluvarmi.com'
-    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').replace(/\/api\/?$/, '');
+  // Widget URL'leri - env'den türetiliyor, hardcoded URL yok
+  const widgetScriptUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/widget/embed.js`
+    : '/widget/embed.js';
 
   const embedCode = `<!-- Yaz Okulu Var mı? Widget -->
 <script
   src="${widgetScriptUrl}"
   data-widget-id="${universityId}"
-  data-api-url="${apiUrl}"
+  data-api-url="${API_BASE}"
   data-theme="${theme}"
   async
 ></script>`;
@@ -180,17 +180,14 @@ export default function SettingsPage() {
 
       {/* Onay Durumu */}
       {university && (
-        <div className={`rounded-2xl border p-4 flex items-center gap-3 ${
-          university.isVerified
+        <div className={`rounded-2xl border p-4 flex items-center gap-3 ${university.isVerified
             ? 'bg-emerald-50 border-emerald-200'
             : 'bg-amber-50 border-amber-200'
-        }`}>
-          <CheckCircle className={`w-5 h-5 shrink-0 ${
-            university.isVerified ? 'text-emerald-500' : 'text-amber-500'
-          }`} />
-          <p className={`text-sm font-medium ${
-            university.isVerified ? 'text-emerald-700' : 'text-amber-700'
           }`}>
+          <CheckCircle className={`w-5 h-5 shrink-0 ${university.isVerified ? 'text-emerald-500' : 'text-amber-500'
+            }`} />
+          <p className={`text-sm font-medium ${university.isVerified ? 'text-emerald-700' : 'text-amber-700'
+            }`}>
             {university.isVerified
               ? 'Üniversiteniz onaylı ve dersleriniz arama sonuçlarında görünüyor.'
               : 'Üniversiteniz henüz onaylanmadı. Admin onayından sonra dersleriniz görünür olacak.'}
@@ -303,11 +300,11 @@ export default function SettingsPage() {
                 üzerinden JSON formatında ders verilerinize erişebilirsiniz:
               </p>
               <pre className="bg-slate-50 rounded-lg p-3 text-xs font-mono text-slate-600 overflow-x-auto">
-{`fetch("https://yazokuluvarmi.com/api/widget/${universityId}")
+                {`fetch("${API_BASE}/api/widget/${universityId}")
   .then(res => res.json())
   .then(data => {
-    // data.courses - Ders listesi
-    // data.university - Üniversite bilgileri
+    // data.rows - Ders listesi
+    // data.universityName - Üniversite adı
     console.log(data);
   });`}
               </pre>
@@ -383,7 +380,7 @@ export default function SettingsPage() {
             <Globe className="w-4 h-4" />API Endpoint (Headless)
           </label>
           <div className="bg-slate-50 rounded-xl p-4 text-xs font-mono text-slate-600 border border-slate-200">
-            GET https://yazokuluvarmi.com/api/widget/{universityId}
+            GET {API_BASE}/api/widget/{universityId}
           </div>
         </div>
       </div>
